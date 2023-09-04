@@ -1,0 +1,213 @@
+basePath: /api
+definitions:
+  httpapi.createSegmentRequest:
+    properties:
+      name:
+        example: AVITO_VOICE_MESSAGES
+        type: string
+    required:
+    - name
+    type: object
+  httpapi.deleteSegmentRequest:
+    properties:
+      name:
+        example: AVITO_VOICE_MESSAGES
+        type: string
+    required:
+    - name
+    type: object
+  httpapi.failedResponse:
+    properties:
+      code:
+        type: integer
+      error:
+        type: string
+    required:
+    - code
+    - error
+    type: object
+  httpapi.successResponse:
+    properties:
+      result: {}
+    required:
+    - result
+    type: object
+  httpapi.updateExperimentsRequest:
+    properties:
+      add:
+        example:
+        - AVITO_VOICE_MESSAGES
+        - AVITO_DISCOUNT_50
+        items:
+          type: string
+        type: array
+      delete:
+        example:
+        - AVITO_PERFORMANCE_VAS
+        - AVITO_DISCOUNT_30
+        items:
+          type: string
+        type: array
+    required:
+    - add
+    - delete
+    type: object
+host: localhost:8081
+info:
+  contact: {}
+  description: This API provides dynamic user segmentation to conduct experiments.
+  title: User Segmentation Service API
+  version: "1.0"
+paths:
+  /experiments/user/{user_id}:
+    get:
+      consumes:
+      - application/json
+      description: Gets the user's active segments.
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/httpapi.successResponse'
+            - properties:
+                result:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.failedResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.failedResponse'
+      summary: Gets user experiments
+      tags:
+      - experiments
+    post:
+      consumes:
+      - application/json
+      description: Deletes user's active segments and adds new segments from existing
+        ones.
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - description: Lists of deleting and adding active user segments
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/httpapi.updateExperimentsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/httpapi.successResponse'
+            - properties:
+                result:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.failedResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.failedResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.failedResponse'
+      summary: Updates user experiments
+      tags:
+      - experiments
+  /segment:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an existing segment by input name.
+      parameters:
+      - description: Segment name
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/httpapi.deleteSegmentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/httpapi.successResponse'
+            - properties:
+                result:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.failedResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.failedResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.failedResponse'
+      summary: Deletes segment
+      tags:
+      - segments
+    post:
+      consumes:
+      - application/json
+      description: Сreates a new segment with input name.
+      parameters:
+      - description: Segment name
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/httpapi.createSegmentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/httpapi.successResponse'
+            - properties:
+                result:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.failedResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.failedResponse'
+      summary: Creates segment
+      tags:
+      - segments
+swagger: "2.0"
