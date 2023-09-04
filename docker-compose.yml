@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+  postgres:
+    image: postgres:15-alpine3.18
+
+    container_name: db-postgres
+    restart: unless-stopped
+    init: true
+
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./.initdb:/docker-entrypoint-initdb.d
+    env_file:
+      - ./config/.env
+    ports:
+      - 5436:5432
+
+  user-segmentation:
+    build:
+      context: .
+      target: final
+
+    container_name: user-segmentation
+    restart: unless-stopped
+    init: true
+
+    depends_on:
+      - postgres
+    env_file:
+      - ./config/.env
+    ports:
+      - 8081:8081
+
+volumes:
+  db-data:

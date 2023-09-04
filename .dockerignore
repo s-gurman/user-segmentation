@@ -1,0 +1,12 @@
+.dockerignore
+.gitignore
+.git/
+.initdb/
+bin/
+docker-compose.yml
+Dockerfile
+golangci.yml
+images/
+Makefile
+README.md
+task/

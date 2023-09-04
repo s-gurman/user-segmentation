@@ -1,0 +1,71 @@
+run:
+  timeout: 3m
+  skip-dirs:
+    - bin$
+    - docs$
+  modules-download-mode: vendor
+
+linters-settings:
+  dogsled:
+    max-blank-identifiers: 3
+  errcheck:
+    check-blank: true
+  errorlint:
+    errorf: false
+  funlen:
+    lines: 60
+    statements: 50
+  govet:
+    check-shadowing: true
+  golint:
+    min-confidence: 0.3
+  gocyclo:
+    min-complexity: 20
+  gocognit:
+    min-complexity: 30
+  nakedret:
+    max-func-lines: 50
+  predeclared:
+    q: true
+  tagliatelle:
+    case:
+      use-field-name: false
+      rules:
+        json: snake
+        yaml: snake
+        xml: snake
+
+linters:
+  disable-all: true
+  enable:
+    - bodyclose
+    - dogsled
+    - errcheck
+    - errname
+    - errorlint
+    - funlen
+    - goconst
+    - gocritic
+    - gocyclo
+    - gosimple
+    - govet
+    - ineffassign
+    - loggercheck
+    - nakedret
+    - prealloc
+    - predeclared
+    - staticcheck
+    - sqlclosecheck
+    - stylecheck
+    - tagliatelle
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+output:
+  format: colored-line-number
