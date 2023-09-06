@@ -1,16 +1,22 @@
-.PHONY: compose_up compose_down build run test lint swag
-
-.DEFAULT_GOAL := compose_up
+include ./config/.env
+export
 
 APP := user-segmentation
 
-compose_up:
-	docker compose up -d --build --remove-orphans
-	docker logs -f ${APP}
+.DEFAULT_GOAL := compose_run
+
+.PHONY: compose_run compose_down psql build run test lint swag
+
+compose_run:
+	docker compose run -it --rm --build --remove-orphans --service-ports --name ${APP} ${APP}
 
 compose_down:
-	docker compose down --volumes --remove-orphans
-	docker image prune -f --filter="dangling=true"
+	docker compose down --volumes --rmi local
+
+psql:
+	docker exec -it ${APP} \
+	psql postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@\
+	$(POSTGRES_ADDR)/$(POSTGRES_DB)?sslmode=$(POSTGRES_SSLMODE)
 
 build:
 	go mod vendor

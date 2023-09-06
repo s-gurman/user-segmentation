@@ -19,4 +19,5 @@ RUN apk update && \
     apk add --no-cache postgresql15-client && \
     chmod +x wait-for-postgres.sh user-segmentation
 
+EXPOSE 8081
 CMD [ "./wait-for-postgres.sh", "postgres", "./user-segmentation" ]
