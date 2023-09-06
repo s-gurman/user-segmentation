@@ -1,9 +1,11 @@
-CREATE TABLE IF NOT EXISTS segments (
+DROP TABLE IF EXISTS experiments_history, experiments, segments;
+
+CREATE TABLE segments (
     id SERIAL PRIMARY KEY,
     slug varchar(255) NOT NULL UNIQUE
 );
 
-CREATE TABLE IF NOT EXISTS experiments (
+CREATE TABLE experiments (
     id SERIAL PRIMARY KEY,
     user_id integer NOT NULL,
     segment_id integer NOT NULL,
@@ -19,7 +21,7 @@ CREATE TABLE IF NOT EXISTS experiments (
         ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS experiment_history (
+CREATE TABLE experiments_history (
     id SERIAL PRIMARY KEY,
     user_id integer NOT NULL,
     segment_slug varchar(255) NOT NULL,

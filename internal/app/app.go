@@ -41,7 +41,7 @@ func Run(cfg config.Config) {
 	repo := segmentrepo.NewPostgreSQL(pg)
 	service := segmentsvc.New(repo.Segment, repo.Experiment)
 
-	router := httpapi.NewRouter(service, l, cfg.HTTP.Port)
+	router := httpapi.NewRouter(service, l)
 	server := httpserver.New(cfg.HTTP, router)
 
 	ctx, cancel = signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)

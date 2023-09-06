@@ -23,20 +23,20 @@ type muxRouter struct {
 	*mux.Router
 }
 
-func NewRouter(uc SegmentationUseCase, l logger.Logger, port string) http.Handler {
+func NewRouter(uc SegmentationUseCase, l logger.Logger) http.Handler {
 	segHandler := newSegmentHandler(uc, l)
 	expHandler := newExperimentHandler(uc, l)
 
 	router := muxRouter{mux.NewRouter()}.
 		WithHandler(segHandler).
 		WithHandler(expHandler).
-		WithSwagger(port).
+		WithSwagger().
 		WithMiddleware(l)
 
 	return router
 }
 
-func (r muxRouter) WithSwagger(port string) muxRouter {
+func (r muxRouter) WithSwagger() muxRouter {
 	swaggerHandler := swagger.Handler(
 		swagger.DeepLinking(true),
 		swagger.DocExpansion("full"),

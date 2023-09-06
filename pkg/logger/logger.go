@@ -7,9 +7,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-const (
-	DateTime = "2006-01-02 15:04:05"
-)
+const dateTimeLayout = "2006-01-02 15:04:05"
 
 type Logger interface {
 	Info(...interface{})
@@ -26,7 +24,7 @@ type Logger interface {
 
 func New() Logger {
 	encoderCfg := zap.NewProductionEncoderConfig()
-	encoderCfg.EncodeTime = zapcore.TimeEncoderOfLayout(DateTime)
+	encoderCfg.EncodeTime = zapcore.TimeEncoderOfLayout(dateTimeLayout)
 	zapLogger := zap.New(
 		zapcore.NewCore(
 			zapcore.NewJSONEncoder(encoderCfg),

@@ -27,7 +27,7 @@ func writeAndLogValue(w http.ResponseWriter, resp successResponse, l logger.Logg
 	code := http.StatusOK
 	data, err := json.Marshal(resp)
 	if err != nil {
-		l.Errorf("httpapi - json encode err: %s", err)
+		l.Errorf("httpapi - response encode err: %s", err)
 		data = []byte(`{"error":"internal error","code":500}`)
 		code = http.StatusInternalServerError
 	}
@@ -49,7 +49,7 @@ func writeAndLogError(w http.ResponseWriter, resp failedResponse, l logger.Logge
 
 	data, err := json.Marshal(resp)
 	if err != nil {
-		l.Errorf("httpapi - json encode err: %s", err)
+		l.Errorf("httpapi - response encode err: %s", err)
 		data = []byte(`{"error":"internal error","code":500}`)
 		resp.Code = http.StatusInternalServerError
 	}

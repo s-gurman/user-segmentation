@@ -32,29 +32,29 @@ type updateExperimentsRequest struct {
 	SegmentsToAdd []string `json:"add"    example:"AVITO_VOICE_MESSAGES,AVITO_DISCOUNT_50"`
 }
 
-// @Tags           experiments
-// @Summary        Updates user experiments
-// @Description    Deletes user's active segments and adds new segments from existing ones.
-// @Router         /experiments/user/{user_id} [post]
-// @Accept         json
-// @Produce        json
-// @Param          user_id     path     int true "User ID"
-// @Param          body        body     updateExperimentsRequest true "Lists of deleting and adding active user segments"
-// @Success        200         {object} successResponse{result=string}
-// @Failure        400,404,500 {object} failedResponse
+// @Tags         experiments
+// @Summary      Updates user experiments
+// @Description  Deletes user's active segments and adds new ones.
+// @Router       /experiments/user/{user_id} [post]
+// @Accept       json
+// @Produce      json
+// @Param        user_id     path     int                      true "User ID"
+// @Param        body        body     updateExperimentsRequest true "Lists of deleting and adding active segments"
+// @Success      200         {object} successResponse{result=string}
+// @Failure      400,404,500 {object} failedResponse
 func (h experimentHandler) updateExperiments(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userID, err := strconv.Atoi(vars["user_id"])
 	if err != nil {
 		resp := failedResponse{Msg: "internal error", Code: 500, err: err}
-		writeAndLogError(w, resp, h.l, "httpapi - strconv id err" /*log*/)
+		writeAndLogError(w, resp, h.l, "httpapi - user id parse" /*log*/)
 		return
 	}
 
 	var req updateExperimentsRequest
 	if err = json.NewDecoder(r.Body).Decode(&req); err != nil {
-		resp := failedResponse{Msg: "invalid json in request body", Code: 400, err: err}
-		writeAndLogError(w, resp, h.l, "httpapi - decode json err" /*log*/)
+		resp := failedResponse{Msg: "invalid request, check swagger file", Code: 400, err: err}
+		writeAndLogError(w, resp, h.l, "httpapi - decode request body")
 		return
 	}
 
@@ -68,7 +68,7 @@ func (h experimentHandler) updateExperiments(w http.ResponseWriter, r *http.Requ
 			resp = failedResponse{Msg: custom.Message(), Code: custom.Code()}
 		}
 		resp.err = err
-		writeAndLogError(w, resp, h.l, "httpapi - update experiments" /*log*/)
+		writeAndLogError(w, resp, h.l, "httpapi - update experiments")
 		return
 	}
 

@@ -47,25 +47,26 @@ type (
 func (h segmentHandler) createSegment(w http.ResponseWriter, r *http.Request) {
 	var req createSegmentRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		resp := failedResponse{Msg: "invalid json in request body", Code: 400, err: err}
-		writeAndLogError(w, resp, h.l, "httpapi - decode json err" /*log*/)
+		resp := failedResponse{Msg: "invalid request, check swagger file", Code: 400, err: err}
+		writeAndLogError(w, resp, h.l, "httpapi - decode request body" /*log*/)
 		return
 	}
 
 	id, err := h.uc.CreateSegment(r.Context(), req.SegmentName)
 	if err != nil {
 		var (
-			cErr e.CustomError
-			resp = failedResponse{Msg: "internal error", Code: 500, err: err}
+			custom e.CustomError
+			resp   = failedResponse{Msg: "internal error", Code: 500}
 		)
-		if errors.As(err, &cErr) {
-			resp = failedResponse{Msg: cErr.Message(), Code: cErr.Code(), err: err}
+		if errors.As(err, &custom) {
+			resp = failedResponse{Msg: custom.Message(), Code: custom.Code()}
 		}
-		writeAndLogError(w, resp, h.l, "httpapi - create segment" /*log*/)
+		resp.err = err
+		writeAndLogError(w, resp, h.l, "httpapi - create segment")
 		return
 	}
 
-	msg := fmt.Sprintf("created segment '%s' (id=%d)", req.SegmentName, id)
+	msg := fmt.Sprintf("created segment '%s' with id=%d", req.SegmentName, id)
 	resp := successResponse{Value: msg}
 	writeAndLogValue(w, resp, h.l, msg)
 }
@@ -82,21 +83,22 @@ func (h segmentHandler) createSegment(w http.ResponseWriter, r *http.Request) {
 func (h segmentHandler) deleteSegment(w http.ResponseWriter, r *http.Request) {
 	var req deleteSegmentRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		resp := failedResponse{Msg: "invalid json in request body", Code: 400, err: err}
-		writeAndLogError(w, resp, h.l, "httpapi - decode json" /*log*/)
+		resp := failedResponse{Msg: "invalid request, check swagger file", Code: 400, err: err}
+		writeAndLogError(w, resp, h.l, "httpapi - decode request body" /*log*/)
 		return
 	}
 
 	err := h.uc.DeleteSegment(r.Context(), req.SegmentName)
 	if err != nil {
 		var (
-			cErr e.CustomError
-			resp = failedResponse{Msg: "internal error", Code: 500, err: err}
+			custom e.CustomError
+			resp   = failedResponse{Msg: "internal error", Code: 500}
 		)
-		if errors.As(err, &cErr) {
-			resp = failedResponse{Msg: cErr.Message(), Code: cErr.Code(), err: err}
+		if errors.As(err, &custom) {
+			resp = failedResponse{Msg: custom.Message(), Code: custom.Code()}
 		}
-		writeAndLogError(w, resp, h.l, "httpapi - delete segment" /*log*/)
+		resp.err = err
+		writeAndLogError(w, resp, h.l, "httpapi - delete segment")
 		return
 	}
 

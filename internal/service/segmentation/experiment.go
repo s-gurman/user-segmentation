@@ -10,39 +10,57 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-func GetSegmentsSlug(toDel, toAdd []string) ([]domain.Slug, []domain.Slug, error) {
-	if len(toDel) == 0 && len(toAdd) == 0 {
-		return nil, nil, e.NewBadRequest("empty experiment update lists" /*msg*/, "segmentsvc" /*from*/)
-	}
-	nameToSlug := func(names []string, slugs []domain.Slug) error {
-		for i, name := range names {
-			slug, err := domain.NewSlug(name)
-			if err != nil {
-				return err
-			}
-			slugs[i] = slug
+func namesToSlugs(names []string, slugs []domain.Slug, list string) error {
+	// no need to use sync Map (it will be created and used by only one goroutine)
+	namesMap := make(map[string]struct{})
+
+	for i, name := range names {
+		if _, found := namesMap[name]; found {
+			msg := fmt.Sprintf("%s list contains non-unique segments", list)
+			return e.NewBadRequest(msg, "segmentsvc")
 		}
-		return nil
+		namesMap[name] = struct{}{}
+
+		slug, err := domain.NewSlug(name)
+		if err != nil {
+			msg := fmt.Sprintf("%s list contains invalid segment name", list)
+			return e.NewBadRequest(msg, "segmentsvc")
+		}
+		slugs[i] = slug
+	}
+
+	return nil
+}
+
+func getSlugsToUpdate(toDel, toAdd []string) ([]domain.Slug, []domain.Slug, error) {
+	if len(toDel) == 0 && len(toAdd) == 0 {
+		msg := "empty experiment update lists, must add or delete at least one segment"
+		return nil, nil, e.NewBadRequest(msg, "segmentsvc" /*from*/)
 	}
 	slugsToDel := make([]domain.Slug, len(toDel))
 	slugsToAdd := make([]domain.Slug, len(toAdd))
 
 	g := new(errgroup.Group)
 	g.Go(func() error {
-		return nameToSlug(toDel, slugsToDel)
+		return namesToSlugs(toDel, slugsToDel, "delete")
 	})
 	g.Go(func() error {
-		return nameToSlug(toAdd, slugsToAdd)
+		return namesToSlugs(toAdd, slugsToAdd, "add")
 	})
 	if err := g.Wait(); err != nil {
-		return nil, nil, e.NewBadRequest(err.Error(), "segmentsvc" /*from*/)
+		return nil, nil, err
 	}
 
 	return slugsToDel, slugsToAdd, nil
 }
 
-func (svc SegmentationSvc) UpdateExperiments(ctx context.Context, userID int, toDel, toAdd []string) error {
-	slugsToDel, slugsToAdd, err := GetSegmentsSlug(toDel, toAdd)
+func (svc SegmentationSvc) UpdateExperiments(
+	ctx context.Context,
+	userID int,
+	toDel, toAdd []string,
+) error {
+
+	slugsToDel, slugsToAdd, err := getSlugsToUpdate(toDel, toAdd)
 	if err != nil {
 		return err
 	}
