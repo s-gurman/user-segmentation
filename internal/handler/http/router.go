@@ -16,7 +16,7 @@ type SegmentationUseCase interface {
 	CreateSegment(ctx context.Context, name string) (int, error)
 	DeleteSegment(ctx context.Context, name string) error
 	UpdateExperiments(ctx context.Context, userID int, segmentsToDel, segmentsToAdd []string) error
-	GetUserExperiments(ctx context.Context, userID int) error
+	GetUserExperiments(ctx context.Context, userID int) ([]string, error)
 }
 
 type muxRouter struct {

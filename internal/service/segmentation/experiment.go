@@ -70,6 +70,15 @@ func (svc SegmentationSvc) UpdateExperiments(
 	return nil
 }
 
-func (svc SegmentationSvc) GetUserExperiments(ctx context.Context, userID int) error {
-	return nil
+func (svc SegmentationSvc) GetUserExperiments(
+	ctx context.Context,
+	userID int,
+) ([]string, error) {
+
+	slugs, err := svc.exprepo.GetUserSegments(ctx, userID)
+	if err != nil {
+		return nil, fmt.Errorf("segmentsvc - get user segments: %w", err)
+	}
+
+	return slugs, nil
 }

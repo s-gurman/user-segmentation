@@ -109,3 +109,28 @@ func (repo ExperimentRepo) UpdateUserSegments(ctx context.Context, userID int, t
 
 	return nil
 }
+
+func (repo ExperimentRepo) GetUserSegments(
+	ctx context.Context,
+	userID int,
+) ([]string, error) {
+
+	query := fmt.Sprintf(
+		`SELECT %s.%s FROM %s JOIN %s ON %s = %s.%s
+WHERE %s = $1 AND (%s IS NULL OR %s > NOW())`,
+		segTable, segSlugAttr, expTable, segTable, expSegAttr, segTable, segIDAttr,
+		expUserAttr, expExpiredAttr, expExpiredAttr,
+	)
+
+	rows, err := repo.db.Query(ctx, query, userID)
+	if err != nil {
+		return nil, fmt.Errorf("segmentrepo - user segments query err: %w", err)
+	}
+
+	var slugs []string
+	if err := pgxscan.ScanAll(&slugs, rows); err != nil {
+		return nil, fmt.Errorf("segmentrepo - tx slugs scan err: %w", err)
+	}
+
+	return slugs, nil
+}

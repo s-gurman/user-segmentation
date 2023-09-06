@@ -90,20 +90,28 @@ func (h experimentHandler) updateExperiments(w http.ResponseWriter, r *http.Requ
 // @Success        200     {object} successResponse{result=string}
 // @Failure        400,500 {object} failedResponse
 func (h experimentHandler) getExperiments(w http.ResponseWriter, r *http.Request) {
-	// id, err := h.uc.CreateSegment(r.Context(), req.SegmentName)
-	// if err != nil {
-	// 	var (
-	// 		custom e.CustomError
-	// 		resp = failedResponse{Msg: "internal error", Code: 500, err: err}
-	// 	)
-	// 	if errors.As(err, &custom) {
-	// 		resp = failedResponse{Msg: custom.Message(), Code: custom.Code(), err: err}
-	// 	}
-	// 	writeAndLogError(w, resp, h.l, "httpapi - create segment")
-	// 	return
-	// }
+	vars := mux.Vars(r)
+	userID, err := strconv.Atoi(vars["user_id"])
+	if err != nil {
+		resp := failedResponse{Msg: "internal error", Code: 500, err: err}
+		writeAndLogError(w, resp, h.l, "httpapi - user id parse" /*log*/)
+		return
+	}
 
-	// msg := fmt.Sprintf("created segment '%s' with id=%d", req.SegmentName, id)
-	// resp := successResponse{Value: msg}
-	// writeAndLogValue(w, resp, h.l, msg)
+	slugs, err := h.uc.GetUserExperiments(r.Context(), userID)
+	if err != nil {
+		var (
+			custom e.CustomError
+			resp   = failedResponse{Msg: "internal error", Code: 500, err: err}
+		)
+		if errors.As(err, &custom) {
+			resp = failedResponse{Msg: custom.Message(), Code: custom.Code(), err: err}
+		}
+		writeAndLogError(w, resp, h.l, "httpapi - get user experiments")
+		return
+	}
+
+	msg := fmt.Sprintf("got %d active segments for user '%d'", len(slugs), userID)
+	resp := successResponse{Value: slugs}
+	writeAndLogValue(w, resp, h.l, msg)
 }

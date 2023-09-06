@@ -9,8 +9,8 @@ import (
 type (
 	ExperimentStorage interface {
 		UpdateUserSegments(ctx context.Context, userID int, toDel, toAdd []domain.Slug) error
+		GetUserSegments(ctx context.Context, userID int) ([]string, error)
 	}
-
 	SegmentStorage interface {
 		InsertOne(ctx context.Context, slug domain.Slug) (int, error)
 		DeleteOne(ctx context.Context, slug domain.Slug) error
