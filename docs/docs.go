@@ -71,7 +71,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Deletes user's active segments and adds new segments from existing ones.",
+                "description": "Deletes user's active segments and adds new ones.\nBy default, user's active segments will not be automatically deleted.\nThe 'deletion_time' option sets time of user removal from added segments.",
                 "consumes": [
                     "application/json"
                 ],
@@ -91,7 +91,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Lists of deleting and adding active user segments",
+                        "description": "Lists of deleting and adding active segments",
                         "name": "body",
                         "in": "body",
                         "required": true,
@@ -264,9 +264,6 @@ const docTemplate = `{
     "definitions": {
         "httpapi.createSegmentRequest": {
             "type": "object",
-            "required": [
-                "name"
-            ],
             "properties": {
                 "name": {
                     "type": "string",
@@ -276,9 +273,6 @@ const docTemplate = `{
         },
         "httpapi.deleteSegmentRequest": {
             "type": "object",
-            "required": [
-                "name"
-            ],
             "properties": {
                 "name": {
                     "type": "string",
@@ -288,10 +282,6 @@ const docTemplate = `{
         },
         "httpapi.failedResponse": {
             "type": "object",
-            "required": [
-                "code",
-                "error"
-            ],
             "properties": {
                 "code": {
                     "type": "integer"
@@ -303,21 +293,23 @@ const docTemplate = `{
         },
         "httpapi.successResponse": {
             "type": "object",
-            "required": [
-                "result"
-            ],
             "properties": {
                 "result": {}
             }
         },
+        "httpapi.updateExperimentsOpts": {
+            "type": "object",
+            "properties": {
+                "deletion_time": {
+                    "type": "string",
+                    "example": "2024-02-24 04:59:59"
+                }
+            }
+        },
         "httpapi.updateExperimentsRequest": {
             "type": "object",
-            "required": [
-                "add",
-                "delete"
-            ],
             "properties": {
-                "add": {
+                "add_segments": {
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -327,7 +319,7 @@ const docTemplate = `{
                         "AVITO_DISCOUNT_50"
                     ]
                 },
-                "delete": {
+                "delete_segments": {
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -336,6 +328,9 @@ const docTemplate = `{
                         "AVITO_PERFORMANCE_VAS",
                         "AVITO_DISCOUNT_30"
                     ]
+                },
+                "options": {
+                    "$ref": "#/definitions/httpapi.updateExperimentsOpts"
                 }
             }
         }

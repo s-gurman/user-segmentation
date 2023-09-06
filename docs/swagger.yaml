@@ -5,16 +5,12 @@ definitions:
       name:
         example: AVITO_VOICE_MESSAGES
         type: string
-    required:
-    - name
     type: object
   httpapi.deleteSegmentRequest:
     properties:
       name:
         example: AVITO_VOICE_MESSAGES
         type: string
-    required:
-    - name
     type: object
   httpapi.failedResponse:
     properties:
@@ -22,35 +18,35 @@ definitions:
         type: integer
       error:
         type: string
-    required:
-    - code
-    - error
     type: object
   httpapi.successResponse:
     properties:
       result: {}
-    required:
-    - result
+    type: object
+  httpapi.updateExperimentsOpts:
+    properties:
+      deletion_time:
+        example: "2024-02-24 04:59:59"
+        type: string
     type: object
   httpapi.updateExperimentsRequest:
     properties:
-      add:
+      add_segments:
         example:
         - AVITO_VOICE_MESSAGES
         - AVITO_DISCOUNT_50
         items:
           type: string
         type: array
-      delete:
+      delete_segments:
         example:
         - AVITO_PERFORMANCE_VAS
         - AVITO_DISCOUNT_30
         items:
           type: string
         type: array
-    required:
-    - add
-    - delete
+      options:
+        $ref: '#/definitions/httpapi.updateExperimentsOpts'
     type: object
 host: localhost:8081
 info:
@@ -96,15 +92,17 @@ paths:
     post:
       consumes:
       - application/json
-      description: Deletes user's active segments and adds new segments from existing
-        ones.
+      description: |-
+        Deletes user's active segments and adds new ones.
+        By default, user's active segments will not be automatically deleted.
+        The 'deletion_time' option sets time of user removal from added segments.
       parameters:
       - description: User ID
         in: path
         name: user_id
         required: true
         type: integer
-      - description: Lists of deleting and adding active user segments
+      - description: Lists of deleting and adding active segments
         in: body
         name: body
         required: true
