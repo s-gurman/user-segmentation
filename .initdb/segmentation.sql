@@ -9,8 +9,8 @@ CREATE TABLE experiments (
     id SERIAL PRIMARY KEY,
     user_id integer NOT NULL,
     segment_id integer NOT NULL,
-    started_at timestamp NOT NULL,
-    expired_at timestamp,
+    started_at timestamp(0) without time zone NOT NULL,
+    expired_at timestamp(0) without time zone DEFAULT NULL,
 
     CONSTRAINT experiments_user_segment_unique
         UNIQUE (user_id, segment_id),
@@ -26,5 +26,5 @@ CREATE TABLE experiments_history (
     user_id integer NOT NULL,
     segment_slug varchar(255) NOT NULL,
     operation_type varchar(255) NOT NULL,
-    updated_at timestamp NOT NULL
+    updated_at timestamp(0) without time zone NOT NULL
 );

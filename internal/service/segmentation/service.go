@@ -4,16 +4,17 @@ import (
 	"context"
 
 	"github.com/s-gurman/user-segmentation/internal/domain"
+	"github.com/s-gurman/user-segmentation/internal/t"
 )
 
 type (
 	ExperimentStorage interface {
-		UpdateUserSegments(ctx context.Context, userID int, toDel, toAdd []domain.Slug) error
-		GetUserSegments(ctx context.Context, userID int) ([]string, error)
+		UpdateUserSegments(_ context.Context, userID int, toDel, toAdd []domain.Slug, delTime *t.CustomTime) error
+		GetUserSegments(_ context.Context, userID int) ([]string, error)
 	}
 	SegmentStorage interface {
-		InsertOne(ctx context.Context, slug domain.Slug) (int, error)
-		DeleteOne(ctx context.Context, slug domain.Slug) error
+		InsertOne(_ context.Context, slug domain.Slug) (int, error)
+		DeleteOne(_ context.Context, slug domain.Slug) error
 	}
 )
 

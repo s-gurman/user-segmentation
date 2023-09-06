@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/s-gurman/user-segmentation/internal/e"
+	"github.com/s-gurman/user-segmentation/internal/t"
 	"github.com/s-gurman/user-segmentation/pkg/logger"
 
 	"github.com/gorilla/mux"
@@ -27,14 +28,22 @@ func (h experimentHandler) addRoutes(r *mux.Router) {
 	r.HandleFunc("/experiments/user/{user_id:[0-9]+}", h.getExperiments).Methods(http.MethodGet)
 }
 
-type updateExperimentsRequest struct {
-	SegmentsToDel []string `json:"delete" example:"AVITO_PERFORMANCE_VAS,AVITO_DISCOUNT_30"`
-	SegmentsToAdd []string `json:"add"    example:"AVITO_VOICE_MESSAGES,AVITO_DISCOUNT_50"`
-}
+type (
+	updateExperimentsOpts struct {
+		DeletionTime *t.CustomTime `json:"deletion_time" swaggertype:"string" example:"2024-02-24 04:59:59"`
+	}
+	updateExperimentsRequest struct {
+		SegsToDel []string              `json:"delete_segments" example:"AVITO_PERFORMANCE_VAS,AVITO_DISCOUNT_30"`
+		SegsToAdd []string              `json:"add_segments"    example:"AVITO_VOICE_MESSAGES,AVITO_DISCOUNT_50"`
+		Opts      updateExperimentsOpts `json:"options"`
+	}
+)
 
 // @Tags         experiments
 // @Summary      Updates user experiments
 // @Description  Deletes user's active segments and adds new ones.
+// @Description  By default, user's active segments will not be automatically deleted.
+// @Description  The 'deletion_time' option sets time of user removal from added segments.
 // @Router       /experiments/user/{user_id} [post]
 // @Accept       json
 // @Produce      json
@@ -58,7 +67,7 @@ func (h experimentHandler) updateExperiments(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	err = h.uc.UpdateExperiments(r.Context(), userID, req.SegmentsToDel, req.SegmentsToAdd)
+	err = h.uc.UpdateExperiments(r.Context(), userID, req.SegsToDel, req.SegsToAdd, req.Opts.DeletionTime)
 	if err != nil {
 		var (
 			custom e.CustomError
@@ -74,7 +83,7 @@ func (h experimentHandler) updateExperiments(w http.ResponseWriter, r *http.Requ
 
 	msg := fmt.Sprintf(
 		"added %d segments to user '%d' and deleted %d active ones",
-		len(req.SegmentsToAdd), userID, len(req.SegmentsToDel),
+		len(req.SegsToAdd), userID, len(req.SegsToDel),
 	)
 	resp := successResponse{Value: msg}
 	writeAndLogValue(w, resp, h.l, msg)

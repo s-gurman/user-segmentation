@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"log"
+	_ "time/tzdata" // for getting a TimeZone environment variable from .env
 
 	"github.com/s-gurman/user-segmentation/config"
 	"github.com/s-gurman/user-segmentation/internal/app"
