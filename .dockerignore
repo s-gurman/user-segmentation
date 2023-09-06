@@ -1,4 +1,5 @@
 .dockerignore
+.e2e/
 .gitignore
 .git/
 .initdb/
