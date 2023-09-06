@@ -28,7 +28,7 @@ func NewSegmentRepository(pg postgres.Postgres) SegmentRepo {
 	return SegmentRepo{db: pg.GetPool()}
 }
 
-func (repo SegmentRepo) InsertOne(ctx context.Context, slug domain.Slug) (int, error) {
+func (repo SegmentRepo) CreateSegment(ctx context.Context, slug domain.Slug) (int, error) {
 	query := fmt.Sprintf(
 		"INSERT INTO %s (%s) VALUES ($1) RETURNING %s",
 		segTable, segSlugAttr, segIDAttr,
@@ -47,7 +47,7 @@ func (repo SegmentRepo) InsertOne(ctx context.Context, slug domain.Slug) (int, e
 	return id, nil
 }
 
-func (repo SegmentRepo) DeleteOne(ctx context.Context, slug domain.Slug) error {
+func (repo SegmentRepo) DeleteSegment(ctx context.Context, slug domain.Slug) error {
 	query := fmt.Sprintf(
 		"DELETE FROM %s WHERE %s = $1",
 		segTable, segSlugAttr,

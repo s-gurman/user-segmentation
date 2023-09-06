@@ -24,18 +24,6 @@ const (
 	expTable        = "experiments"
 )
 
-type pgxTx struct {
-	pgx.Tx
-}
-
-func NewPgxTx(ctx context.Context, db *pgxpool.Pool, opts pgx.TxOptions) (pgxTx, error) {
-	tx, err := db.BeginTx(ctx, opts)
-	if err != nil {
-		return pgxTx{}, fmt.Errorf("segmentrepo - tx begin err: %w", err)
-	}
-	return pgxTx{Tx: tx}, nil
-}
-
 func (tx pgxTx) getSegmentIDs(ctx context.Context, slugs []domain.Slug) ([]int, error) {
 	query := fmt.Sprintf(
 		"SELECT %s FROM %s WHERE %s = ANY($1)",
@@ -136,7 +124,7 @@ func (repo ExperimentRepo) UpdateUserSegments(
 ) error {
 
 	txOpts := pgx.TxOptions{IsoLevel: pgx.RepeatableRead}
-	tx, err := NewPgxTx(ctx, repo.db, txOpts)
+	tx, err := newPgxTx(ctx, repo.db, txOpts)
 	if err != nil {
 		return err
 	}

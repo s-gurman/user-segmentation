@@ -14,7 +14,7 @@ func (svc SegmentationSvc) CreateSegment(ctx context.Context, name string) (int,
 		return 0, e.NewBadRequest(err.Error(), "segmentsvc" /*from*/)
 	}
 
-	id, err := svc.segrepo.InsertOne(ctx, slug)
+	id, err := svc.segrepo.CreateSegment(ctx, slug)
 	if err != nil {
 		return 0, fmt.Errorf("segmentsvc - insert one segment: %w", err)
 	}
@@ -27,7 +27,7 @@ func (svc SegmentationSvc) DeleteSegment(ctx context.Context, name string) error
 	if err != nil {
 		return e.NewBadRequest(err.Error(), "segmentsvc" /*from*/)
 	}
-	if err := svc.segrepo.DeleteOne(ctx, slug); err != nil {
+	if err := svc.segrepo.DeleteSegment(ctx, slug); err != nil {
 		return fmt.Errorf("segmentsvc - delete one segment: %w", err)
 	}
 	return nil

@@ -13,8 +13,8 @@ type (
 		GetUserSegments(_ context.Context, userID int) ([]string, error)
 	}
 	SegmentStorage interface {
-		InsertOne(_ context.Context, slug domain.Slug) (int, error)
-		DeleteOne(_ context.Context, slug domain.Slug) error
+		CreateSegment(_ context.Context, slug domain.Slug) (int, error)
+		DeleteSegment(_ context.Context, slug domain.Slug) error
 	}
 )
 
