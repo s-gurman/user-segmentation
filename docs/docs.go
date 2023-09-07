@@ -49,7 +49,10 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "result": {
-                                            "type": "string"
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
                                         }
                                     }
                                 }
@@ -142,7 +145,7 @@ const docTemplate = `{
         },
         "/segment": {
             "post": {
-                "description": "Сreates a new segment with input name.",
+                "description": "Сreates a new segment with input name.\nThe 'autoadd_percent' option sets percentage of users who will be added to the new segment automatically.",
                 "consumes": [
                     "application/json"
                 ],
@@ -262,12 +265,24 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "httpapi.createSegmentOpts": {
+            "type": "object",
+            "properties": {
+                "autoadd_percent": {
+                    "type": "number",
+                    "example": 99.9
+                }
+            }
+        },
         "httpapi.createSegmentRequest": {
             "type": "object",
             "properties": {
                 "name": {
                     "type": "string",
                     "example": "AVITO_VOICE_MESSAGES"
+                },
+                "options": {
+                    "$ref": "#/definitions/httpapi.createSegmentOpts"
                 }
             }
         },

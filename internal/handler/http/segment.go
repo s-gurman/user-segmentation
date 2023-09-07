@@ -43,6 +43,7 @@ type (
 // @Tags           segments
 // @Summary        Creates segment
 // @Description    Сreates a new segment with input name.
+// @Description    The 'autoadd_percent' option sets percentage of users who will be added to the new segment automatically.
 // @Router         /segment [post]
 // @Accept         json
 // @Produce        json

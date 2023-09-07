@@ -96,7 +96,7 @@ func (h experimentHandler) updateExperiments(w http.ResponseWriter, r *http.Requ
 // @Accept         json
 // @Produce        json
 // @Param          user_id path     int true "User ID"
-// @Success        200     {object} successResponse{result=string}
+// @Success        200     {object} successResponse{result=[]string}
 // @Failure        400,500 {object} failedResponse
 func (h experimentHandler) getExperiments(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)

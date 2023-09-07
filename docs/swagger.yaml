@@ -1,10 +1,18 @@
 basePath: /api
 definitions:
+  httpapi.createSegmentOpts:
+    properties:
+      autoadd_percent:
+        example: 99.9
+        type: number
+    type: object
   httpapi.createSegmentRequest:
     properties:
       name:
         example: AVITO_VOICE_MESSAGES
         type: string
+      options:
+        $ref: '#/definitions/httpapi.createSegmentOpts'
     type: object
   httpapi.deleteSegmentRequest:
     properties:
@@ -76,7 +84,9 @@ paths:
             - $ref: '#/definitions/httpapi.successResponse'
             - properties:
                 result:
-                  type: string
+                  items:
+                    type: string
+                  type: array
               type: object
         "400":
           description: Bad Request
@@ -177,7 +187,9 @@ paths:
     post:
       consumes:
       - application/json
-      description: Сreates a new segment with input name.
+      description: |-
+        Сreates a new segment with input name.
+        The 'autoadd_percent' option sets percentage of users who will be added to the new segment automatically.
       parameters:
       - description: Segment name
         in: body
