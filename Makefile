@@ -1,29 +1,27 @@
 include ./config/.env
 export
 
-APP := user-segmentation
-
 .DEFAULT_GOAL := compose_run
 
 .PHONY: compose_run compose_down psql build run test lint swag
 
 compose_run:
-	docker compose run -it --rm --build --remove-orphans --service-ports --name ${APP} ${APP}
+	docker compose run -it --rm --build --remove-orphans --service-ports --name $(APP) $(APP)
 
 compose_down:
 	docker compose down --volumes --rmi local
 
 psql:
-	docker exec -it ${APP} \
+	docker exec -it $(APP) \
 	psql postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@\
 	$(POSTGRES_ADDR)/$(POSTGRES_DB)?sslmode=$(POSTGRES_SSLMODE)
 
 build:
 	go mod vendor
-	go build -mod=vendor -o ./bin/${APP} ./cmd/${APP}
+	go build -mod=vendor -o ./bin/$(APP) ./cmd/$(APP)
 
 run: build
-	./bin/${APP}
+	./bin/$(APP)
 
 test:
 	go test -v -coverpkg=./... -coverprofile=./test_coverage/cover.out ./...

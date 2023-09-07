@@ -1,9 +1,9 @@
 .dockerignore
-.e2e/
 .gitignore
 .git/
 .initdb/
 bin/
+e2e/
 docker-compose.yml
 Dockerfile
 golangci.yml
