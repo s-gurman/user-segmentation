@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/s-gurman/user-segmentation/internal/e"
 	"github.com/s-gurman/user-segmentation/pkg/logger"
@@ -27,8 +28,12 @@ func (h segmentHandler) addRoutes(r *mux.Router) {
 }
 
 type (
+	createSegmentOpts struct {
+		AutoaddPercent float32 `json:"autoadd_percent" example:"99.9"`
+	}
 	createSegmentRequest struct {
-		SegmentName string `json:"name" example:"AVITO_VOICE_MESSAGES"`
+		SegmentName string            `json:"name" example:"AVITO_VOICE_MESSAGES"`
+		Opts        createSegmentOpts `json:"options"`
 	}
 	deleteSegmentRequest struct {
 		SegmentName string `json:"name" example:"AVITO_VOICE_MESSAGES"`
@@ -52,7 +57,7 @@ func (h segmentHandler) createSegment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := h.uc.CreateSegment(r.Context(), req.SegmentName)
+	id, autoaddCount, err := h.uc.CreateSegment(r.Context(), req.SegmentName, req.Opts.AutoaddPercent)
 	if err != nil {
 		var (
 			custom e.CustomError
@@ -66,9 +71,13 @@ func (h segmentHandler) createSegment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	msg := fmt.Sprintf("created segment '%s' with id=%d", req.SegmentName, id)
-	resp := successResponse{Value: msg}
-	writeAndLogValue(w, resp, h.l, msg)
+	var b strings.Builder
+	b.WriteString(fmt.Sprintf("created segment '%s' (id=%d)", req.SegmentName, id))
+	if req.Opts.AutoaddPercent != 0 {
+		b.WriteString(fmt.Sprintf(" with %d active users", autoaddCount))
+	}
+	resp := successResponse{Value: b.String()}
+	writeAndLogValue(w, resp, h.l, b.String())
 }
 
 // @Tags           segments
