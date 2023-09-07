@@ -1,24 +1,16 @@
-#! /bin/sh
-
-# prepare: creating new segments
-curl -s -X 'POST' 'http://localhost:8081/api/segment' -d '{"name": "a1"}' > /dev/null
-curl -s -X 'POST' 'http://localhost:8081/api/segment' -d '{"name": "a2"}' > /dev/null
-curl -s -X 'POST' 'http://localhost:8081/api/segment' -d '{"name": "a3"}' > /dev/null
-curl -s -X 'POST' 'http://localhost:8081/api/segment' -d '{"name": "a4"}' > /dev/null
-curl -s -X 'POST' 'http://localhost:8081/api/segment' -d '{"name": "a5"}' > /dev/null
-curl -s -X 'POST' 'http://localhost:8081/api/segment' -d '{"name": "a6"}' > /dev/null
-curl -s -X 'POST' 'http://localhost:8081/api/segment' -d '{"name": "a7"}' > /dev/null
-curl -s -X 'POST' 'http://localhost:8081/api/segment' -d '{"name": "a8"}' > /dev/null
-curl -s -X 'POST' 'http://localhost:8081/api/segment' -d '{"name": "a9"}' > /dev/null
-curl -s -X 'POST' 'http://localhost:8081/api/segment' -d '{"name": "a10"}' > /dev/null
-
-APP=user-segmentation
-EXP_TABLE=experiments
-SEG_TABLE=segments
+#! /bin/bash
 
 export $(grep -v '^#' ./config/.env | xargs -d '\n')
 
->&2 echo "================ success test cases ================"
+# prepare: creating new segments
+for i in {1..10}; do
+    curl -s -X 'POST' 'http://localhost:8081/api/segment' -d '{"name": "a'$i'"}' > /dev/null
+done
+
+
+
+echo; echo "================ success test cases ================"
+
 curl -s -X 'POST' 'http://localhost:8081/api/experiments/user/1234' -d '{
   "add_segments": ["a1","a2","a3","a4","a5"],
   "delete_segments": []
@@ -62,21 +54,21 @@ curl -s -X 'POST' 'http://localhost:8081/api/experiments/user/1234' -d '{
   "add_segments": ["a8","a9","a10"],
   "delete_segments": ["a1","a2","a3","a4","a5"]
 }'; echo
-
 echo
 
 docker exec -it $APP psql postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@\
 $POSTGRES_ADDR/$POSTGRES_DB?sslmode=$POSTGRES_SSLMODE \
--c 'SELECT user_id, '$SEG_TABLE'.slug, started_at, expired_at FROM '$EXP_TABLE' '\
-'JOIN '$SEG_TABLE' ON segment_id = '$SEG_TABLE'.id;'
-
+-c 'SELECT user_id, segments.slug, started_at, expired_at FROM experiments '\
+'JOIN segments ON segment_id = segments.id;'
 sleep 2
->&2 echo timestamp: $(date '+%F %T')
+
+echo timestamp: $(date '+%F %T')
 curl -s -X 'GET' 'http://localhost:8081/api/experiments/user/1234'; echo
 
-echo
 
->&2 echo "================ failed test cases ================"
+
+echo; echo "================ failed test cases ================"
+
 curl -s -X 'POST' 'http://localhost:8081/api/experiments/user/1234' -d '{
   "add_segments": [],
   "delete_segments": []
@@ -115,14 +107,9 @@ curl -s -X 'POST' 'http://localhost:8081/api/experiments/user/1234' -d '{
   "delete_segments": []
 }'; echo
 
+
+
 #clear after test
-curl -s -X 'DELETE' 'http://localhost:8081/api/segment' -d '{"name": "a1"}' > /dev/null
-curl -s -X 'DELETE' 'http://localhost:8081/api/segment' -d '{"name": "a2"}' > /dev/null
-curl -s -X 'DELETE' 'http://localhost:8081/api/segment' -d '{"name": "a3"}' > /dev/null
-curl -s -X 'DELETE' 'http://localhost:8081/api/segment' -d '{"name": "a4"}' > /dev/null
-curl -s -X 'DELETE' 'http://localhost:8081/api/segment' -d '{"name": "a5"}' > /dev/null
-curl -s -X 'DELETE' 'http://localhost:8081/api/segment' -d '{"name": "a6"}' > /dev/null
-curl -s -X 'DELETE' 'http://localhost:8081/api/segment' -d '{"name": "a7"}' > /dev/null
-curl -s -X 'DELETE' 'http://localhost:8081/api/segment' -d '{"name": "a8"}' > /dev/null
-curl -s -X 'DELETE' 'http://localhost:8081/api/segment' -d '{"name": "a9"}' > /dev/null
-curl -s -X 'DELETE' 'http://localhost:8081/api/segment' -d '{"name": "a10"}' > /dev/null
+for i in {1..10}; do
+    curl -s -X 'DELETE' 'http://localhost:8081/api/segment' -d '{"name": "a'$i'"}' > /dev/null
+done
