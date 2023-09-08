@@ -15,20 +15,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-const (
-	expUniqueConstr = "experiments_user_segment_unique"
-	expStartedAttr  = "started_at"
-	expExpiredAttr  = "expired_at"
-	expUserAttr     = "user_id"
-	expSegAttr      = "segment_id"
-	expTable        = "experiments"
-)
-
 func (tx pgxTx) getSegmentIDs(ctx context.Context, slugs []domain.Slug) ([]int, error) {
-	query := fmt.Sprintf(
-		"SELECT %s FROM %s WHERE %s = ANY($1)",
-		segIDAttr, segTable, segSlugAttr,
-	)
+	query := `SELECT id FROM segments WHERE slug = ANY($1)`
 
 	rows, err := tx.Query(ctx, query, slugs)
 	if err != nil {
@@ -52,12 +40,11 @@ func (tx pgxTx) softDeleteUserSegments(
 	userID int, segIDs []int,
 ) error {
 
-	query := fmt.Sprintf(
-		`UPDATE %s SET %s = NOW() WHERE %s = $1
-AND %s = ANY($2) AND (%s IS NULL OR %s > NOW())`,
-		expTable, expExpiredAttr, expUserAttr,
-		expSegAttr, expExpiredAttr, expExpiredAttr,
-	)
+	query := `
+UPDATE experiments SET expired_at = NOW()
+WHERE user_id = $1
+	AND segment_id = ANY($2)
+	AND (expired_at IS NULL OR expired_at > NOW())`
 
 	tag, err := tx.Exec(ctx, query, userID, segIDs)
 	if err != nil {
@@ -77,14 +64,13 @@ func (tx pgxTx) addUserSegments(
 	expired *t.CustomTime,
 ) error {
 
-	query := fmt.Sprintf(
-		`INSERT INTO %s (%s, %s, %s, %s) VALUES ($1, $2, NOW(), DEFAULT)
-ON CONFLICT ON CONSTRAINT %s DO UPDATE SET %s = EXCLUDED.%s, %s = DEFAULT
-WHERE %s.%s IS NOT NULL AND %s.%s <= EXCLUDED.%s`,
-		expTable, expUserAttr, expSegAttr, expStartedAttr, expExpiredAttr,
-		expUniqueConstr, expStartedAttr, expStartedAttr, expExpiredAttr,
-		expTable, expExpiredAttr, expTable, expExpiredAttr, expStartedAttr,
-	)
+	query := `
+INSERT INTO experiments (user_id, segment_id, started_at, expired_at) VALUES ($1, $2, NOW(), DEFAULT)
+ON CONFLICT ON CONSTRAINT experiments_user_segment_unique
+DO UPDATE SET started_at = EXCLUDED.started_at, expired_at = DEFAULT
+WHERE experiments.expired_at IS NOT NULL
+	AND experiments.expired_at <= EXCLUDED.started_at`
+
 	if expired != nil {
 		query = strings.ReplaceAll(query, "DEFAULT", "$3")
 	}
@@ -158,12 +144,11 @@ func (repo ExperimentRepo) GetUserSegments(
 	userID int,
 ) ([]string, error) {
 
-	query := fmt.Sprintf(
-		`SELECT %s.%s FROM %s JOIN %s ON %s = %s.%s
-WHERE %s = $1 AND (%s IS NULL OR %s > NOW())`,
-		segTable, segSlugAttr, expTable, segTable, expSegAttr, segTable, segIDAttr,
-		expUserAttr, expExpiredAttr, expExpiredAttr,
-	)
+	query := `
+SELECT segments.slug FROM experiments
+JOIN segments ON segment_id = segments.id
+WHERE user_id = $1
+	AND (expired_at IS NULL OR expired_at > NOW())`
 
 	rows, err := repo.db.Query(ctx, query, userID)
 	if err != nil {

@@ -16,19 +16,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-const (
-	segSlugAttr = "slug"
-	segIDAttr   = "id"
-	segTable    = "segments"
-	usersIDAttr = "id"
-	usersTable  = "users"
-)
-
-func (tx pgxTx) createSegment(ctx context.Context, slug domain.Slug) (int, error) {
-	query := fmt.Sprintf(
-		"INSERT INTO %s (%s) VALUES ($1) RETURNING %s",
-		segTable, segSlugAttr, segIDAttr,
-	)
+func (tx pgxTx) insertSegment(ctx context.Context, slug domain.Slug) (int, error) {
+	query := `INSERT INTO segments (slug) VALUES ($1) RETURNING id`
 
 	var id int
 	if err := tx.QueryRow(ctx, query, slug).Scan(&id); err != nil {
@@ -44,10 +33,7 @@ func (tx pgxTx) createSegment(ctx context.Context, slug domain.Slug) (int, error
 }
 
 func (tx pgxTx) getUserBatch(ctx context.Context, autoaddPercent float32) ([]int, error) {
-	query := fmt.Sprintf(
-		"SELECT %s FROM %s TABLESAMPLE BERNOULLI ($1)",
-		usersIDAttr, usersTable,
-	)
+	query := `SELECT id FROM users TABLESAMPLE BERNOULLI ($1)`
 
 	rows, err := tx.Query(ctx, query, autoaddPercent)
 	if err != nil {
@@ -70,15 +56,15 @@ func (tx pgxTx) addSegmentToUsers(ctx context.Context, userIDs []int, segID int)
 
 	affected, err := tx.CopyFrom(
 		ctx,
-		pgx.Identifier{expTable},
-		[]string{expUserAttr, expSegAttr},
+		pgx.Identifier{"experiments"},
+		[]string{"user_id", "segment_id"},
 		pgx.CopyFromRows(experiments),
 	)
 	if err != nil {
 		return fmt.Errorf("segmentrepo - tx copy experiments err: %w", err)
 	}
 	if affected != int64(len(userIDs)) {
-		return errors.New("segmentrepo err: autoadd segment to users failed")
+		return errors.New("segmentrepo err: new segment autoadd to users failed")
 	}
 
 	return nil
@@ -105,7 +91,7 @@ func (repo SegmentRepo) CreateSegment(
 	}
 	defer tx.Rollback(ctx) // nolint:errcheck
 
-	segID, err := tx.createSegment(ctx, slug)
+	segID, err := tx.insertSegment(ctx, slug)
 	if err != nil {
 		return 0, 0, err
 	}
@@ -136,10 +122,7 @@ func (repo SegmentRepo) DeleteSegment(
 	slug domain.Slug,
 ) error {
 
-	query := fmt.Sprintf(
-		"DELETE FROM %s WHERE %s = $1",
-		segTable, segSlugAttr,
-	)
+	query := `DELETE FROM segments WHERE slug = $1`
 
 	tag, err := repo.db.Exec(ctx, query, slug)
 	if err != nil {
