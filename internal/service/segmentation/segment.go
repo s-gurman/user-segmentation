@@ -12,7 +12,7 @@ func (svc SegmentationSvc) CreateSegment(
 	ctx context.Context,
 	name string,
 	autoaddPercent float32,
-) (int, int, error) {
+) (int, int64, error) {
 
 	slug, err := domain.NewSlug(name)
 	if err != nil {

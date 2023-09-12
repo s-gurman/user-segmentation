@@ -28,7 +28,7 @@ func (tx pgxTx) getSegmentIDs(ctx context.Context, slugs []domain.Slug) ([]int, 
 		return nil, fmt.Errorf("segmentrepo - tx ids scan err: %w", err)
 	}
 	if len(segIDs) != len(slugs) {
-		msg := "attempt to work with unknown segments, create them first"
+		msg := "attempt to work with unknown segment, create it first"
 		return nil, e.NewNotFound(msg, "segmentrepo" /*from*/)
 	}
 
@@ -41,17 +41,18 @@ func (tx pgxTx) softDeleteUserSegments(
 ) error {
 
 	query := `
-UPDATE experiments SET expired_at = NOW()
-WHERE user_id = $1
-	AND segment_id = ANY($2)
-	AND (expired_at IS NULL OR expired_at > NOW())`
+UPDATE experiments SET expired_at = NOW()::timestamp(0)
+FROM segments
+WHERE segments.id = ANY($2)
+	AND user_id = $1 AND segment_id = segments.id
+	AND (expired_at IS NULL OR expired_at > NOW()::timestamp(0))`
 
 	tag, err := tx.Exec(ctx, query, userID, segIDs)
 	if err != nil {
 		return fmt.Errorf("segmentrepo - tx user segments delete err: %w", err)
 	}
 	if tag.RowsAffected() != int64(len(segIDs)) {
-		msg := "attempt to delete user's inactive segments"
+		msg := "attempt to delete user's inactive segment"
 		return e.NewBadRequest(msg, "segmentrepo" /*from*/)
 	}
 
@@ -65,30 +66,26 @@ func (tx pgxTx) addUserSegments(
 ) error {
 
 	query := `
-INSERT INTO experiments (user_id, segment_id, started_at, expired_at) VALUES ($1, $2, NOW(), DEFAULT)
+INSERT INTO experiments (user_id, segment_id, expired_at)
+SELECT $1, id, NULL FROM segments WHERE id = ANY($2)
 ON CONFLICT ON CONSTRAINT experiments_user_segment_unique
-DO UPDATE SET started_at = EXCLUDED.started_at, expired_at = DEFAULT
+	DO UPDATE SET started_at = NOW()::timestamp(0), expired_at = NULL
 WHERE experiments.expired_at IS NOT NULL
-	AND experiments.expired_at <= EXCLUDED.started_at`
+	AND experiments.expired_at <= NOW()::timestamp(0)`
 
+	args := []any{userID, segIDs}
 	if expired != nil {
-		query = strings.ReplaceAll(query, "DEFAULT", "$3")
+		query = strings.Replace(query, "NULL", "$3", 2)
+		args = append(args, expired.Time)
 	}
 
-	for _, segID := range segIDs {
-		args := []any{userID, segID}
-		if expired != nil {
-			args = append(args, expired.Time)
-		}
-
-		tag, err := tx.Exec(ctx, query, args...)
-		if err != nil {
-			return fmt.Errorf("segmentrepo - tx user segments add err: %w", err)
-		}
-		if tag.RowsAffected() != 1 {
-			msg := "attempt to add already active segment"
-			return e.NewBadRequest(msg, "segmentrepo" /*from*/)
-		}
+	tag, err := tx.Exec(ctx, query, args...)
+	if err != nil {
+		return fmt.Errorf("segmentrepo - tx user segments add err: %w", err)
+	}
+	if tag.RowsAffected() != int64(len(segIDs)) {
+		msg := "attempt to add already active segment"
+		return e.NewBadRequest(msg, "segmentrepo" /*from*/)
 	}
 
 	return nil
@@ -148,16 +145,16 @@ func (repo ExperimentRepo) GetUserSegments(
 SELECT segments.slug FROM experiments
 JOIN segments ON segment_id = segments.id
 WHERE user_id = $1
-	AND (expired_at IS NULL OR expired_at > NOW())`
+	AND (expired_at IS NULL OR expired_at > NOW()::timestamp(0))`
 
 	rows, err := repo.db.Query(ctx, query, userID)
 	if err != nil {
 		return nil, fmt.Errorf("segmentrepo - user segments query err: %w", err)
 	}
 
-	var slugs []string
+	slugs := make([]string, 0)
 	if err := pgxscan.ScanAll(&slugs, rows); err != nil {
-		return nil, fmt.Errorf("segmentrepo - tx slugs scan err: %w", err)
+		return nil, fmt.Errorf("segmentrepo - user segments scan err: %w", err)
 	}
 
 	return slugs, nil

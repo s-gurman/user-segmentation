@@ -13,7 +13,7 @@ type (
 		GetUserSegments(_ context.Context, userID int) ([]string, error)
 	}
 	SegmentStorage interface {
-		CreateSegment(_ context.Context, slug domain.Slug, autoaddPercent float32) (int, int, error)
+		CreateSegment(_ context.Context, slug domain.Slug, autoaddPercent float32) (int, int64, error)
 		DeleteSegment(_ context.Context, slug domain.Slug) error
 	}
 )

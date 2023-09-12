@@ -14,7 +14,7 @@ import (
 )
 
 type SegmentationUseCase interface {
-	CreateSegment(_ context.Context, name string, autoaddPercent float32) (int, int, error)
+	CreateSegment(_ context.Context, name string, autoaddPercent float32) (int, int64, error)
 	DeleteSegment(_ context.Context, name string) error
 	UpdateExperiments(_ context.Context, userID int, segsToDel, segsToAdd []string, delTime *t.CustomTime) error
 	GetUserExperiments(_ context.Context, userID int) ([]string, error)
