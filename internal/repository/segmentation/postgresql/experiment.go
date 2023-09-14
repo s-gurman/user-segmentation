@@ -12,10 +12,17 @@ import (
 
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func (tx pgxTx) getSegmentIDs(ctx context.Context, slugs []domain.Slug) ([]int, error) {
+type ExperimentRepo struct {
+	db PgxPool
+}
+
+func NewExperimentRepository(pg postgres.Postgres) ExperimentRepo {
+	return ExperimentRepo{db: pg.GetPool()}
+}
+
+func getSegmentIDs(ctx context.Context, tx pgx.Tx, slugs []domain.Slug) ([]int, error) {
 	query := `SELECT id FROM segments WHERE slug = ANY($1)`
 
 	rows, err := tx.Query(ctx, query, slugs)
@@ -35,9 +42,11 @@ func (tx pgxTx) getSegmentIDs(ctx context.Context, slugs []domain.Slug) ([]int, 
 	return segIDs, nil
 }
 
-func (tx pgxTx) softDeleteUserSegments(
+func softDeleteUserSegments(
 	ctx context.Context,
-	userID int, segIDs []int,
+	tx pgx.Tx,
+	userID int,
+	segIDs []int,
 ) error {
 
 	query := `
@@ -59,9 +68,11 @@ WHERE segments.id = ANY($2)
 	return nil
 }
 
-func (tx pgxTx) addUserSegments(
+func addUserSegments(
 	ctx context.Context,
-	userID int, segIDs []int,
+	tx pgx.Tx,
+	userID int,
+	segIDs []int,
 	expired *t.CustomTime,
 ) error {
 
@@ -91,14 +102,6 @@ WHERE experiments.expired_at IS NOT NULL
 	return nil
 }
 
-type ExperimentRepo struct {
-	db *pgxpool.Pool
-}
-
-func NewExperimentRepository(pg postgres.Postgres) ExperimentRepo {
-	return ExperimentRepo{db: pg.GetPool()}
-}
-
 func (repo ExperimentRepo) UpdateUserSegments(
 	ctx context.Context,
 	userID int,
@@ -106,27 +109,30 @@ func (repo ExperimentRepo) UpdateUserSegments(
 	expired *t.CustomTime,
 ) error {
 
-	txOpts := pgx.TxOptions{IsoLevel: pgx.RepeatableRead}
-	tx, err := newPgxTx(ctx, repo.db, txOpts)
+	tx, err := repo.db.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead})
 	if err != nil {
-		return err
+		return fmt.Errorf("segmentrepo - tx begin err: %w", err)
 	}
 	defer tx.Rollback(ctx) // nolint:errcheck
 
-	idsToDel, err := tx.getSegmentIDs(ctx, toDel)
+	idsToDel, err := getSegmentIDs(ctx, tx, toDel)
 	if err != nil {
 		return err
 	}
-	idsToAdd, err := tx.getSegmentIDs(ctx, toAdd)
+	idsToAdd, err := getSegmentIDs(ctx, tx, toAdd)
 	if err != nil {
 		return err
 	}
 
-	if err = tx.softDeleteUserSegments(ctx, userID, idsToDel); err != nil {
-		return err
+	if len(idsToDel) > 0 {
+		if err = softDeleteUserSegments(ctx, tx, userID, idsToDel); err != nil {
+			return err
+		}
 	}
-	if err = tx.addUserSegments(ctx, userID, idsToAdd, expired); err != nil {
-		return err
+	if len(idsToAdd) > 0 {
+		if err = addUserSegments(ctx, tx, userID, idsToAdd, expired); err != nil {
+			return err
+		}
 	}
 
 	if err = tx.Commit(ctx); err != nil {

@@ -51,7 +51,6 @@ github.com/jackc/pgx/v5/pgconn/internal/ctxwatch
 github.com/jackc/pgx/v5/pgproto3
 github.com/jackc/pgx/v5/pgtype
 github.com/jackc/pgx/v5/pgxpool
-github.com/jackc/pgx/v5/stdlib
 # github.com/jackc/puddle/v2 v2.2.1
 ## explicit; go 1.19
 github.com/jackc/puddle/v2
@@ -67,6 +66,9 @@ github.com/josharian/intern
 github.com/mailru/easyjson/buffer
 github.com/mailru/easyjson/jlexer
 github.com/mailru/easyjson/jwriter
+# github.com/pashagolub/pgxmock/v2 v2.12.0
+## explicit; go 1.20
+github.com/pashagolub/pgxmock/v2
 # github.com/rogpeppe/go-internal v1.11.0
 ## explicit; go 1.19
 # github.com/swaggo/files/v2 v2.0.0
@@ -78,6 +80,9 @@ github.com/swaggo/http-swagger/v2
 # github.com/swaggo/swag v1.16.2
 ## explicit; go 1.18
 github.com/swaggo/swag
+# go.uber.org/mock v0.2.0
+## explicit; go 1.19
+go.uber.org/mock/gomock
 # go.uber.org/multierr v1.11.0
 ## explicit; go 1.19
 go.uber.org/multierr

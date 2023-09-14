@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	_ "github.com/s-gurman/user-segmentation/docs"
+	_ "github.com/s-gurman/user-segmentation/docs" // for handling swagger api
 	"github.com/s-gurman/user-segmentation/internal/t"
 	"github.com/s-gurman/user-segmentation/pkg/http/middleware"
 	"github.com/s-gurman/user-segmentation/pkg/logger"
@@ -12,6 +12,8 @@ import (
 	"github.com/gorilla/mux"
 	swagger "github.com/swaggo/http-swagger/v2"
 )
+
+// mockgen -destination ./mocks/service.go -package mocks github.com/s-gurman/user-segmentation/internal/handler/http SegmentationUseCase
 
 type SegmentationUseCase interface {
 	CreateSegment(_ context.Context, name string, autoaddPercent float32) (int, int64, error)

@@ -1,0 +1,2162 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>config: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/s-gurman/user-segmentation/config/config.go (0.0%)</option>
+				
+				<option value="file1">github.com/s-gurman/user-segmentation/docs/docs.go (100.0%)</option>
+				
+				<option value="file2">github.com/s-gurman/user-segmentation/internal/domain/segment.go (50.0%)</option>
+				
+				<option value="file3">github.com/s-gurman/user-segmentation/internal/e/error.go (0.0%)</option>
+				
+				<option value="file4">github.com/s-gurman/user-segmentation/internal/handler/http/experiment.go (0.0%)</option>
+				
+				<option value="file5">github.com/s-gurman/user-segmentation/internal/handler/http/mocks/service.go (32.3%)</option>
+				
+				<option value="file6">github.com/s-gurman/user-segmentation/internal/handler/http/response.go (33.3%)</option>
+				
+				<option value="file7">github.com/s-gurman/user-segmentation/internal/handler/http/router.go (0.0%)</option>
+				
+				<option value="file8">github.com/s-gurman/user-segmentation/internal/handler/http/segment.go (18.4%)</option>
+				
+				<option value="file9">github.com/s-gurman/user-segmentation/internal/repository/segmentation/postgresql/experiment.go (0.0%)</option>
+				
+				<option value="file10">github.com/s-gurman/user-segmentation/internal/repository/segmentation/postgresql/mocks/pgx_pool.go (45.5%)</option>
+				
+				<option value="file11">github.com/s-gurman/user-segmentation/internal/repository/segmentation/postgresql/mocks/pgx_tx.go (0.0%)</option>
+				
+				<option value="file12">github.com/s-gurman/user-segmentation/internal/repository/segmentation/postgresql/repository.go (0.0%)</option>
+				
+				<option value="file13">github.com/s-gurman/user-segmentation/internal/repository/segmentation/postgresql/segment.go (13.2%)</option>
+				
+				<option value="file14">github.com/s-gurman/user-segmentation/internal/service/segmentation/experiment.go (0.0%)</option>
+				
+				<option value="file15">github.com/s-gurman/user-segmentation/internal/service/segmentation/mocks/storage.go (28.6%)</option>
+				
+				<option value="file16">github.com/s-gurman/user-segmentation/internal/service/segmentation/segment.go (25.0%)</option>
+				
+				<option value="file17">github.com/s-gurman/user-segmentation/internal/service/segmentation/service.go (0.0%)</option>
+				
+				<option value="file18">github.com/s-gurman/user-segmentation/internal/t/time.go (0.0%)</option>
+				
+				<option value="file19">github.com/s-gurman/user-segmentation/pkg/http/middleware/middleware.go (0.0%)</option>
+				
+				<option value="file20">github.com/s-gurman/user-segmentation/pkg/logger/logger.go (0.0%)</option>
+				
+				<option value="file21">github.com/s-gurman/user-segmentation/pkg/postgres/postgres.go (0.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package config
+
+import (
+        "fmt"
+        "time"
+
+        "github.com/ilyakaznacheev/cleanenv"
+)
+
+type Config struct {
+        HTTP HTTPServerConfig `yaml:"http_server"`
+        PG   PGConfig         `yaml:"-"`
+}
+
+type HTTPServerConfig struct {
+        Port         string        `yaml:"port"          env-required:"true"`
+        ReadTimeout  time.Duration `yaml:"read_timeout"  env-default:"5s"`
+        WriteTimeout time.Duration `yaml:"write_timeout" env-default:"5s"`
+}
+
+type PGConfig struct {
+        Address  string `env:"POSTGRES_ADDR"     env-required:"true"`
+        DBName   string `env:"POSTGRES_DB"       env-required:"true"`
+        Username string `env:"POSTGRES_USER"     env-required:"true"`
+        Password string `env:"POSTGRES_PASSWORD" env-required:"true"`
+        SSLMode  string `env:"POSTGRES_SSLMODE"  env-default:"false"`
+}
+
+func New(configPath string) (Config, error) <span class="cov0" title="0">{
+        var cfg Config
+        if err := cleanenv.ReadConfig(configPath, &amp;cfg); err != nil </span><span class="cov0" title="0">{
+                return Config{}, fmt.Errorf("cleanenv - read config err: %w", err)
+        }</span>
+        <span class="cov0" title="0">if err := cleanenv.ReadEnv(&amp;cfg.PG); err != nil </span><span class="cov0" title="0">{
+                return Config{}, fmt.Errorf("cleanenv - read env err: %w", err)
+        }</span>
+        <span class="cov0" title="0">return cfg, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">// Package docs Code generated by swaggo/swag. DO NOT EDIT
+package docs
+
+import "github.com/swaggo/swag"
+
+const docTemplate = `{
+    "schemes": {{ marshal .Schemes }},
+    "swagger": "2.0",
+    "info": {
+        "description": "{{escape .Description}}",
+        "title": "{{.Title}}",
+        "contact": {},
+        "version": "{{.Version}}"
+    },
+    "host": "{{.Host}}",
+    "basePath": "{{.BasePath}}",
+    "paths": {
+        "/experiments/user/{user_id}": {
+            "get": {
+                "description": "Gets the user's active segments.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "experiments"
+                ],
+                "summary": "Gets user experiments",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/httpapi.successResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpapi.failedResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httpapi.failedResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Deletes user's active segments and adds new ones.\nBy default, user's active segments will not be automatically deleted.\nThe 'deletion_time' option sets time of user removal from added segments.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "experiments"
+                ],
+                "summary": "Updates user experiments",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Lists of deleting and adding active segments",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/httpapi.updateExperimentsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/httpapi.successResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpapi.failedResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httpapi.failedResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httpapi.failedResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/segment": {
+            "post": {
+                "description": "Сreates a new segment with input name.\nThe 'autoadd_percent' option sets percentage of users who will be added to the new segment automatically.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "segments"
+                ],
+                "summary": "Creates segment",
+                "parameters": [
+                    {
+                        "description": "Segment name",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/httpapi.createSegmentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/httpapi.successResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpapi.failedResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httpapi.failedResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an existing segment by input name.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "segments"
+                ],
+                "summary": "Deletes segment",
+                "parameters": [
+                    {
+                        "description": "Segment name",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/httpapi.deleteSegmentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/httpapi.successResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpapi.failedResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httpapi.failedResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httpapi.failedResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "httpapi.createSegmentOpts": {
+            "type": "object",
+            "properties": {
+                "autoadd_percent": {
+                    "type": "number",
+                    "example": 99.9
+                }
+            }
+        },
+        "httpapi.createSegmentRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "AVITO_VOICE_MESSAGES"
+                },
+                "options": {
+                    "$ref": "#/definitions/httpapi.createSegmentOpts"
+                }
+            }
+        },
+        "httpapi.deleteSegmentRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "AVITO_VOICE_MESSAGES"
+                }
+            }
+        },
+        "httpapi.failedResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "httpapi.successResponse": {
+            "type": "object",
+            "properties": {
+                "result": {}
+            }
+        },
+        "httpapi.updateExperimentsOpts": {
+            "type": "object",
+            "properties": {
+                "deletion_time": {
+                    "type": "string",
+                    "example": "2024-02-24 04:59:59"
+                }
+            }
+        },
+        "httpapi.updateExperimentsRequest": {
+            "type": "object",
+            "properties": {
+                "add_segments": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "AVITO_VOICE_MESSAGES",
+                        "AVITO_DISCOUNT_50"
+                    ]
+                },
+                "delete_segments": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "AVITO_PERFORMANCE_VAS",
+                        "AVITO_DISCOUNT_30"
+                    ]
+                },
+                "options": {
+                    "$ref": "#/definitions/httpapi.updateExperimentsOpts"
+                }
+            }
+        }
+    }
+}`
+
+// SwaggerInfo holds exported Swagger Info so clients can modify it
+var SwaggerInfo = &amp;swag.Spec{
+        Version:          "1.0",
+        Host:             "localhost:8081",
+        BasePath:         "/api",
+        Schemes:          []string{},
+        Title:            "User Segmentation Service API",
+        Description:      "This API provides dynamic user segmentation to conduct experiments.",
+        InfoInstanceName: "swagger",
+        SwaggerTemplate:  docTemplate,
+        LeftDelim:        "{{",
+        RightDelim:       "}}",
+}
+
+func init() <span class="cov8" title="1">{
+        swag.Register(SwaggerInfo.InstanceName(), SwaggerInfo)
+}</span>
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package domain
+
+import "errors"
+
+var ErrEmptySlug = errors.New("empty segment name")
+
+type Segment struct {
+        ID   int  `db:"id"`
+        Slug Slug `db:"slug"`
+}
+
+type Slug string
+
+func NewSlug(name string) (Slug, error) <span class="cov8" title="1">{
+        if name == "" </span><span class="cov0" title="0">{
+                return Slug(""), ErrEmptySlug
+        }</span>
+        <span class="cov8" title="1">return Slug(name), nil</span>
+}
+
+func (slug Slug) String() string <span class="cov0" title="0">{
+        return string(slug)
+}</span>
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package e
+
+import (
+        "fmt"
+        "net/http"
+)
+
+type CustomError struct {
+        message string
+        source  string
+        code    int
+}
+
+// Implementing error interface for type conversion.
+func (e CustomError) Error() string <span class="cov0" title="0">{
+        return fmt.Sprintf("%s err: %s", e.source, e.message)
+}</span>
+
+func (e CustomError) Message() string <span class="cov0" title="0">{
+        return e.message
+}</span>
+
+func (e CustomError) Code() int <span class="cov0" title="0">{
+        return e.code
+}</span>
+
+func NewBadRequest(msg, from string) CustomError <span class="cov0" title="0">{
+        return CustomError{
+                message: msg,
+                source:  from,
+                code:    http.StatusBadRequest,
+        }
+}</span>
+
+func NewNotFound(msg, from string) CustomError <span class="cov0" title="0">{
+        return CustomError{
+                message: msg,
+                source:  from,
+                code:    http.StatusNotFound,
+        }
+}</span>
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package httpapi
+
+import (
+        "encoding/json"
+        "errors"
+        "fmt"
+        "net/http"
+        "strconv"
+
+        "github.com/s-gurman/user-segmentation/internal/e"
+        "github.com/s-gurman/user-segmentation/internal/t"
+        "github.com/s-gurman/user-segmentation/pkg/logger"
+
+        "github.com/gorilla/mux"
+)
+
+type experimentHandler struct {
+        uc SegmentationUseCase
+        l  logger.Logger
+}
+
+func newExperimentHandler(uc SegmentationUseCase, l logger.Logger) experimentHandler <span class="cov0" title="0">{
+        return experimentHandler{uc: uc, l: l}
+}</span>
+
+func (h experimentHandler) addRoutes(r *mux.Router) <span class="cov0" title="0">{
+        r.HandleFunc("/experiments/user/{user_id:[0-9]+}", h.updateExperiments).Methods(http.MethodPost)
+        r.HandleFunc("/experiments/user/{user_id:[0-9]+}", h.getExperiments).Methods(http.MethodGet)
+}</span>
+
+type (
+        updateExperimentsOpts struct {
+                DeletionTime *t.CustomTime `json:"deletion_time" swaggertype:"string" example:"2024-02-24 04:59:59"`
+        }
+        updateExperimentsRequest struct {
+                SegsToDel []string              `json:"delete_segments" example:"AVITO_PERFORMANCE_VAS,AVITO_DISCOUNT_30"`
+                SegsToAdd []string              `json:"add_segments"    example:"AVITO_VOICE_MESSAGES,AVITO_DISCOUNT_50"`
+                Opts      updateExperimentsOpts `json:"options"`
+        }
+)
+
+// @Tags         experiments
+// @Summary      Updates user experiments
+// @Description  Deletes user's active segments and adds new ones.
+// @Description  By default, user's active segments will not be automatically deleted.
+// @Description  The 'deletion_time' option sets time of user removal from added segments.
+// @Router       /experiments/user/{user_id} [post]
+// @Accept       json
+// @Produce      json
+// @Param        user_id     path     int                      true "User ID"
+// @Param        body        body     updateExperimentsRequest true "Lists of deleting and adding active segments"
+// @Success      200         {object} successResponse{result=string}
+// @Failure      400,404,500 {object} failedResponse
+func (h experimentHandler) updateExperiments(w http.ResponseWriter, r *http.Request) <span class="cov0" title="0">{
+        vars := mux.Vars(r)
+        userID, err := strconv.Atoi(vars["user_id"])
+        if err != nil </span><span class="cov0" title="0">{
+                resp := failedResponse{Msg: "internal error", Code: 500, err: err}
+                writeAndLogError(w, resp, h.l, "httpapi - user id parse" /*log*/)
+                return
+        }</span>
+
+        <span class="cov0" title="0">var req updateExperimentsRequest
+        if err = json.NewDecoder(r.Body).Decode(&amp;req); err != nil </span><span class="cov0" title="0">{
+                resp := failedResponse{Msg: "invalid request, check swagger file", Code: 400, err: err}
+                writeAndLogError(w, resp, h.l, "httpapi - decode request body")
+                return
+        }</span>
+
+        <span class="cov0" title="0">err = h.uc.UpdateExperiments(r.Context(), userID, req.SegsToDel, req.SegsToAdd, req.Opts.DeletionTime)
+        if err != nil </span><span class="cov0" title="0">{
+                var (
+                        custom e.CustomError
+                        resp   = failedResponse{Msg: "internal error", Code: 500}
+                )
+                if errors.As(err, &amp;custom) </span><span class="cov0" title="0">{
+                        resp = failedResponse{Msg: custom.Message(), Code: custom.Code()}
+                }</span>
+                <span class="cov0" title="0">resp.err = err
+                writeAndLogError(w, resp, h.l, "httpapi - update experiments")
+                return</span>
+        }
+
+        <span class="cov0" title="0">msg := fmt.Sprintf(
+                "added %d segments to user '%d' and deleted %d active ones",
+                len(req.SegsToAdd), userID, len(req.SegsToDel),
+        )
+        resp := successResponse{Value: msg}
+        writeAndLogValue(w, resp, h.l, msg)</span>
+}
+
+// @Tags           experiments
+// @Summary        Gets user experiments
+// @Description    Gets the user's active segments.
+// @Router         /experiments/user/{user_id} [get]
+// @Accept         json
+// @Produce        json
+// @Param          user_id path     int true "User ID"
+// @Success        200     {object} successResponse{result=[]string}
+// @Failure        400,500 {object} failedResponse
+func (h experimentHandler) getExperiments(w http.ResponseWriter, r *http.Request) <span class="cov0" title="0">{
+        vars := mux.Vars(r)
+        userID, err := strconv.Atoi(vars["user_id"])
+        if err != nil </span><span class="cov0" title="0">{
+                resp := failedResponse{Msg: "internal error", Code: 500, err: err}
+                writeAndLogError(w, resp, h.l, "httpapi - user id parse" /*log*/)
+                return
+        }</span>
+
+        <span class="cov0" title="0">slugs, err := h.uc.GetUserExperiments(r.Context(), userID)
+        if err != nil </span><span class="cov0" title="0">{
+                var (
+                        custom e.CustomError
+                        resp   = failedResponse{Msg: "internal error", Code: 500, err: err}
+                )
+                if errors.As(err, &amp;custom) </span><span class="cov0" title="0">{
+                        resp = failedResponse{Msg: custom.Message(), Code: custom.Code(), err: err}
+                }</span>
+                <span class="cov0" title="0">writeAndLogError(w, resp, h.l, "httpapi - get user experiments")
+                return</span>
+        }
+
+        <span class="cov0" title="0">msg := fmt.Sprintf("got %d active segments for user '%d'", len(slugs), userID)
+        resp := successResponse{Value: slugs}
+        writeAndLogValue(w, resp, h.l, msg)</span>
+}
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">// Code generated by MockGen. DO NOT EDIT.
+// Source: github.com/s-gurman/user-segmentation/internal/handler/http (interfaces: SegmentationUseCase)
+
+// Package mocks is a generated GoMock package.
+package mocks
+
+import (
+        context "context"
+        reflect "reflect"
+
+        t "github.com/s-gurman/user-segmentation/internal/t"
+        gomock "go.uber.org/mock/gomock"
+)
+
+// MockSegmentationUseCase is a mock of SegmentationUseCase interface.
+type MockSegmentationUseCase struct {
+        ctrl     *gomock.Controller
+        recorder *MockSegmentationUseCaseMockRecorder
+}
+
+// MockSegmentationUseCaseMockRecorder is the mock recorder for MockSegmentationUseCase.
+type MockSegmentationUseCaseMockRecorder struct {
+        mock *MockSegmentationUseCase
+}
+
+// NewMockSegmentationUseCase creates a new mock instance.
+func NewMockSegmentationUseCase(ctrl *gomock.Controller) *MockSegmentationUseCase <span class="cov8" title="1">{
+        mock := &amp;MockSegmentationUseCase{ctrl: ctrl}
+        mock.recorder = &amp;MockSegmentationUseCaseMockRecorder{mock}
+        return mock
+}</span>
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockSegmentationUseCase) EXPECT() *MockSegmentationUseCaseMockRecorder <span class="cov8" title="1">{
+        return m.recorder
+}</span>
+
+// CreateSegment mocks base method.
+func (m *MockSegmentationUseCase) CreateSegment(arg0 context.Context, arg1 string, arg2 float32) (int, int64, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "CreateSegment", arg0, arg1, arg2)
+        ret0, _ := ret[0].(int)
+        ret1, _ := ret[1].(int64)
+        ret2, _ := ret[2].(error)
+        return ret0, ret1, ret2
+}</span>
+
+// CreateSegment indicates an expected call of CreateSegment.
+func (mr *MockSegmentationUseCaseMockRecorder) CreateSegment(arg0, arg1, arg2 interface{}) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSegment", reflect.TypeOf((*MockSegmentationUseCase)(nil).CreateSegment), arg0, arg1, arg2)
+}</span>
+
+// DeleteSegment mocks base method.
+func (m *MockSegmentationUseCase) DeleteSegment(arg0 context.Context, arg1 string) error <span class="cov8" title="1">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "DeleteSegment", arg0, arg1)
+        ret0, _ := ret[0].(error)
+        return ret0
+}</span>
+
+// DeleteSegment indicates an expected call of DeleteSegment.
+func (mr *MockSegmentationUseCaseMockRecorder) DeleteSegment(arg0, arg1 interface{}) *gomock.Call <span class="cov8" title="1">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSegment", reflect.TypeOf((*MockSegmentationUseCase)(nil).DeleteSegment), arg0, arg1)
+}</span>
+
+// GetUserExperiments mocks base method.
+func (m *MockSegmentationUseCase) GetUserExperiments(arg0 context.Context, arg1 int) ([]string, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "GetUserExperiments", arg0, arg1)
+        ret0, _ := ret[0].([]string)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// GetUserExperiments indicates an expected call of GetUserExperiments.
+func (mr *MockSegmentationUseCaseMockRecorder) GetUserExperiments(arg0, arg1 interface{}) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserExperiments", reflect.TypeOf((*MockSegmentationUseCase)(nil).GetUserExperiments), arg0, arg1)
+}</span>
+
+// UpdateExperiments mocks base method.
+func (m *MockSegmentationUseCase) UpdateExperiments(arg0 context.Context, arg1 int, arg2, arg3 []string, arg4 *t.CustomTime) error <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "UpdateExperiments", arg0, arg1, arg2, arg3, arg4)
+        ret0, _ := ret[0].(error)
+        return ret0
+}</span>
+
+// UpdateExperiments indicates an expected call of UpdateExperiments.
+func (mr *MockSegmentationUseCaseMockRecorder) UpdateExperiments(arg0, arg1, arg2, arg3, arg4 interface{}) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateExperiments", reflect.TypeOf((*MockSegmentationUseCase)(nil).UpdateExperiments), arg0, arg1, arg2, arg3, arg4)
+}</span>
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package httpapi
+
+import (
+        "encoding/json"
+        "net/http"
+
+        "github.com/s-gurman/user-segmentation/pkg/logger"
+)
+
+// HTTP 200 response with some value
+type successResponse struct {
+        Value interface{} `json:"result"`
+}
+
+// HTTP 4xx/5xx response with detailed error
+type failedResponse struct {
+        Code int    `json:"code"`
+        Msg  string `json:"error"`
+        err  error  `json:"-"`
+}
+
+// Logs performed actions and writes HTTP response.
+func writeAndLogValue(w http.ResponseWriter, resp successResponse, l logger.Logger, log string) <span class="cov8" title="1">{
+        w.Header().Set("Content-Type", "application/json; charset=utf-8")
+        l.Info(log)
+
+        code := http.StatusOK
+        data, err := json.Marshal(resp)
+        if err != nil </span><span class="cov0" title="0">{
+                l.Errorf("httpapi - response encode err: %s", err)
+                data = []byte(`{"error":"internal error","code":500}`)
+                code = http.StatusInternalServerError
+        }</span>
+
+        <span class="cov8" title="1">w.WriteHeader(code)
+        if _, err = w.Write(data); err != nil </span><span class="cov0" title="0">{
+                l.Errorf("httpapi - response write err: %s", err)
+        }</span>
+}
+
+// Logs input error and writes HTTP response.
+func writeAndLogError(w http.ResponseWriter, resp failedResponse, l logger.Logger, log string) <span class="cov0" title="0">{
+        w.Header().Set("Content-Type", "application/json; charset=utf-8")
+        l.Errorw(
+                log,
+                "code", resp.Code,
+                "error", resp.err,
+        )
+
+        data, err := json.Marshal(resp)
+        if err != nil </span><span class="cov0" title="0">{
+                l.Errorf("httpapi - response encode err: %s", err)
+                data = []byte(`{"error":"internal error","code":500}`)
+                resp.Code = http.StatusInternalServerError
+        }</span>
+
+        <span class="cov0" title="0">w.WriteHeader(resp.Code)
+        if _, err = w.Write(data); err != nil </span><span class="cov0" title="0">{
+                l.Errorf("httpapi - response write err: %s", err)
+        }</span>
+}
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package httpapi
+
+import (
+        "context"
+        "net/http"
+
+        _ "github.com/s-gurman/user-segmentation/docs"
+        "github.com/s-gurman/user-segmentation/internal/t"
+        "github.com/s-gurman/user-segmentation/pkg/http/middleware"
+        "github.com/s-gurman/user-segmentation/pkg/logger"
+
+        "github.com/gorilla/mux"
+        swagger "github.com/swaggo/http-swagger/v2"
+)
+
+// mockgen -destination ./mocks/service.go -package mocks github.com/s-gurman/user-segmentation/internal/handler/http SegmentationUseCase
+
+type SegmentationUseCase interface {
+        CreateSegment(_ context.Context, name string, autoaddPercent float32) (int, int64, error)
+        DeleteSegment(_ context.Context, name string) error
+        UpdateExperiments(_ context.Context, userID int, segsToDel, segsToAdd []string, delTime *t.CustomTime) error
+        GetUserExperiments(_ context.Context, userID int) ([]string, error)
+}
+
+type muxRouter struct {
+        *mux.Router
+}
+
+func NewRouter(uc SegmentationUseCase, l logger.Logger) http.Handler <span class="cov0" title="0">{
+        segHandler := newSegmentHandler(uc, l)
+        expHandler := newExperimentHandler(uc, l)
+
+        router := muxRouter{mux.NewRouter()}.
+                WithHandler(segHandler).
+                WithHandler(expHandler).
+                WithSwagger().
+                WithMiddleware(l)
+
+        return router
+}</span>
+
+func (r muxRouter) WithSwagger() muxRouter <span class="cov0" title="0">{
+        swaggerHandler := swagger.Handler(
+                swagger.DeepLinking(true),
+                swagger.DocExpansion("full"),
+                swagger.DomID("swagger-ui"),
+        )
+        r.PathPrefix("/swagger/").Handler(swaggerHandler).Methods(http.MethodGet)
+        return r
+}</span>
+
+type routeHandler interface {
+        addRoutes(r *mux.Router)
+}
+
+func (r muxRouter) WithHandler(h routeHandler) muxRouter <span class="cov0" title="0">{
+        api := r.PathPrefix("/api").Subrouter()
+        h.addRoutes(api)
+        return r
+}</span>
+
+func (r muxRouter) WithMiddleware(l logger.Logger) http.Handler <span class="cov0" title="0">{
+        router := http.Handler(r.Router)
+        router = middleware.AccessLog(router, l)
+        router = middleware.PanicRecovery(router, l)
+        return router
+}</span>
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package httpapi
+
+import (
+        "encoding/json"
+        "errors"
+        "fmt"
+        "net/http"
+        "strings"
+
+        "github.com/s-gurman/user-segmentation/internal/e"
+        "github.com/s-gurman/user-segmentation/pkg/logger"
+
+        "github.com/gorilla/mux"
+)
+
+type segmentHandler struct {
+        uc SegmentationUseCase
+        l  logger.Logger
+}
+
+func newSegmentHandler(uc SegmentationUseCase, l logger.Logger) routeHandler <span class="cov0" title="0">{
+        return segmentHandler{uc: uc, l: l}
+}</span>
+
+func (h segmentHandler) addRoutes(r *mux.Router) <span class="cov0" title="0">{
+        r.HandleFunc("/segment", h.createSegment).Methods(http.MethodPost)
+        r.HandleFunc("/segment", h.deleteSegment).Methods(http.MethodDelete)
+}</span>
+
+type (
+        createSegmentOpts struct {
+                AutoaddPercent float32 `json:"autoadd_percent" example:"99.9"`
+        }
+        createSegmentRequest struct {
+                SegmentName string            `json:"name" example:"AVITO_VOICE_MESSAGES"`
+                Opts        createSegmentOpts `json:"options"`
+        }
+        deleteSegmentRequest struct {
+                SegmentName string `json:"name" example:"AVITO_VOICE_MESSAGES"`
+        }
+)
+
+// @Tags           segments
+// @Summary        Creates segment
+// @Description    Сreates a new segment with input name.
+// @Description    The 'autoadd_percent' option sets percentage of users who will be added to the new segment automatically.
+// @Router         /segment [post]
+// @Accept         json
+// @Produce        json
+// @Param          body    body     createSegmentRequest true "Segment name"
+// @Success        200     {object} successResponse{result=string}
+// @Failure        400,500 {object} failedResponse
+func (h segmentHandler) createSegment(w http.ResponseWriter, r *http.Request) <span class="cov0" title="0">{
+        var req createSegmentRequest
+        if err := json.NewDecoder(r.Body).Decode(&amp;req); err != nil </span><span class="cov0" title="0">{
+                resp := failedResponse{Msg: "invalid request, check swagger file", Code: 400, err: err}
+                writeAndLogError(w, resp, h.l, "httpapi - decode request body" /*log*/)
+                return
+        }</span>
+
+        <span class="cov0" title="0">id, autoaddCount, err := h.uc.CreateSegment(r.Context(), req.SegmentName, req.Opts.AutoaddPercent)
+        if err != nil </span><span class="cov0" title="0">{
+                var (
+                        custom e.CustomError
+                        resp   = failedResponse{Msg: "internal error", Code: 500}
+                )
+                if errors.As(err, &amp;custom) </span><span class="cov0" title="0">{
+                        resp = failedResponse{Msg: custom.Message(), Code: custom.Code()}
+                }</span>
+                <span class="cov0" title="0">resp.err = err
+                writeAndLogError(w, resp, h.l, "httpapi - create segment")
+                return</span>
+        }
+
+        <span class="cov0" title="0">var b strings.Builder
+        b.WriteString(fmt.Sprintf("created segment '%s' (id=%d)", req.SegmentName, id))
+        if req.Opts.AutoaddPercent != 0 </span><span class="cov0" title="0">{
+                b.WriteString(fmt.Sprintf(" with %d active users", autoaddCount))
+        }</span>
+        <span class="cov0" title="0">resp := successResponse{Value: b.String()}
+        writeAndLogValue(w, resp, h.l, b.String())</span>
+}
+
+// @Tags           segments
+// @Summary        Deletes segment
+// @Description    Deletes an existing segment by input name.
+// @Router         /segment [delete]
+// @Accept         json
+// @Produce        json
+// @Param          body        body     deleteSegmentRequest true "Segment name"
+// @Success        200         {object} successResponse{result=string}
+// @Failure        400,404,500 {object} failedResponse
+func (h segmentHandler) deleteSegment(w http.ResponseWriter, r *http.Request) <span class="cov8" title="1">{
+        var req deleteSegmentRequest
+        if err := json.NewDecoder(r.Body).Decode(&amp;req); err != nil </span><span class="cov0" title="0">{
+                resp := failedResponse{Msg: "invalid request, check swagger file", Code: 400, err: err}
+                writeAndLogError(w, resp, h.l, "httpapi - decode request body" /*log*/)
+                return
+        }</span>
+
+        <span class="cov8" title="1">err := h.uc.DeleteSegment(r.Context(), req.SegmentName)
+        if err != nil </span><span class="cov0" title="0">{
+                var (
+                        custom e.CustomError
+                        resp   = failedResponse{Msg: "internal error", Code: 500}
+                )
+                if errors.As(err, &amp;custom) </span><span class="cov0" title="0">{
+                        resp = failedResponse{Msg: custom.Message(), Code: custom.Code()}
+                }</span>
+                <span class="cov0" title="0">resp.err = err
+                writeAndLogError(w, resp, h.l, "httpapi - delete segment")
+                return</span>
+        }
+
+        <span class="cov8" title="1">msg := fmt.Sprintf("segment '%s' deleted", req.SegmentName)
+        resp := successResponse{Value: msg}
+        writeAndLogValue(w, resp, h.l, msg)</span>
+}
+</pre>
+		
+		<pre class="file" id="file9" style="display: none">package segmentrepo
+
+import (
+        "context"
+        "fmt"
+        "strings"
+
+        "github.com/s-gurman/user-segmentation/internal/domain"
+        "github.com/s-gurman/user-segmentation/internal/e"
+        "github.com/s-gurman/user-segmentation/internal/t"
+        "github.com/s-gurman/user-segmentation/pkg/postgres"
+
+        "github.com/georgysavva/scany/v2/pgxscan"
+        "github.com/jackc/pgx/v5"
+)
+
+type ExperimentRepo struct {
+        db PgxPool
+}
+
+func NewExperimentRepository(pg postgres.Postgres) ExperimentRepo <span class="cov0" title="0">{
+        return ExperimentRepo{db: pg.GetPool()}
+}</span>
+
+func getSegmentIDs(ctx context.Context, tx pgx.Tx, slugs []domain.Slug) ([]int, error) <span class="cov0" title="0">{
+        query := `SELECT id FROM segments WHERE slug = ANY($1)`
+
+        rows, err := tx.Query(ctx, query, slugs)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("segmentrepo - tx slugs query err: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">var segIDs []int
+        if err := pgxscan.ScanAll(&amp;segIDs, rows); err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("segmentrepo - tx ids scan err: %w", err)
+        }</span>
+        <span class="cov0" title="0">if len(segIDs) != len(slugs) </span><span class="cov0" title="0">{
+                msg := "attempt to work with unknown segment, create it first"
+                return nil, e.NewNotFound(msg, "segmentrepo" /*from*/)
+        }</span>
+
+        <span class="cov0" title="0">return segIDs, nil</span>
+}
+
+func softDeleteUserSegments(
+        ctx context.Context,
+        tx pgx.Tx,
+        userID int,
+        segIDs []int,
+) error <span class="cov0" title="0">{
+
+        query := `
+UPDATE experiments SET expired_at = NOW()::timestamp(0)
+FROM segments
+WHERE segments.id = ANY($2)
+        AND user_id = $1 AND segment_id = segments.id
+        AND (expired_at IS NULL OR expired_at &gt; NOW()::timestamp(0))`
+
+        tag, err := tx.Exec(ctx, query, userID, segIDs)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("segmentrepo - tx user segments delete err: %w", err)
+        }</span>
+        <span class="cov0" title="0">if tag.RowsAffected() != int64(len(segIDs)) </span><span class="cov0" title="0">{
+                msg := "attempt to delete user's inactive segment"
+                return e.NewBadRequest(msg, "segmentrepo" /*from*/)
+        }</span>
+
+        <span class="cov0" title="0">return nil</span>
+}
+
+func addUserSegments(
+        ctx context.Context,
+        tx pgx.Tx,
+        userID int,
+        segIDs []int,
+        expired *t.CustomTime,
+) error <span class="cov0" title="0">{
+
+        query := `
+INSERT INTO experiments (user_id, segment_id, expired_at)
+SELECT $1, id, NULL FROM segments WHERE id = ANY($2)
+ON CONFLICT ON CONSTRAINT experiments_user_segment_unique
+        DO UPDATE SET started_at = NOW()::timestamp(0), expired_at = NULL
+WHERE experiments.expired_at IS NOT NULL
+        AND experiments.expired_at &lt;= NOW()::timestamp(0)`
+
+        args := []any{userID, segIDs}
+        if expired != nil </span><span class="cov0" title="0">{
+                query = strings.Replace(query, "NULL", "$3", 2)
+                args = append(args, expired.Time)
+        }</span>
+
+        <span class="cov0" title="0">tag, err := tx.Exec(ctx, query, args...)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("segmentrepo - tx user segments add err: %w", err)
+        }</span>
+        <span class="cov0" title="0">if tag.RowsAffected() != int64(len(segIDs)) </span><span class="cov0" title="0">{
+                msg := "attempt to add already active segment"
+                return e.NewBadRequest(msg, "segmentrepo" /*from*/)
+        }</span>
+
+        <span class="cov0" title="0">return nil</span>
+}
+
+func (repo ExperimentRepo) UpdateUserSegments(
+        ctx context.Context,
+        userID int,
+        toDel, toAdd []domain.Slug,
+        expired *t.CustomTime,
+) error <span class="cov0" title="0">{
+
+        tx, err := repo.db.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead})
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("segmentrepo - tx begin err: %w", err)
+        }</span>
+        <span class="cov0" title="0">defer tx.Rollback(ctx) // nolint:errcheck
+
+        idsToDel, err := getSegmentIDs(ctx, tx, toDel)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov0" title="0">idsToAdd, err := getSegmentIDs(ctx, tx, toAdd)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov0" title="0">if len(idsToDel) &gt; 0 </span><span class="cov0" title="0">{
+                if err = softDeleteUserSegments(ctx, tx, userID, idsToDel); err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+        }
+        <span class="cov0" title="0">if len(idsToAdd) &gt; 0 </span><span class="cov0" title="0">{
+                if err = addUserSegments(ctx, tx, userID, idsToAdd, expired); err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+        }
+
+        <span class="cov0" title="0">if err = tx.Commit(ctx); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("segmentrepo - tx commit err: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">return nil</span>
+}
+
+func (repo ExperimentRepo) GetUserSegments(
+        ctx context.Context,
+        userID int,
+) ([]string, error) <span class="cov0" title="0">{
+
+        query := `
+SELECT segments.slug FROM experiments
+JOIN segments ON segment_id = segments.id
+WHERE user_id = $1
+        AND (expired_at IS NULL OR expired_at &gt; NOW()::timestamp(0))`
+
+        rows, err := repo.db.Query(ctx, query, userID)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("segmentrepo - user segments query err: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">slugs := make([]string, 0)
+        if err := pgxscan.ScanAll(&amp;slugs, rows); err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("segmentrepo - user segments scan err: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">return slugs, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file10" style="display: none">// Code generated by MockGen. DO NOT EDIT.
+// Source: ./pgx_pool.go
+
+// Package mocks is a generated GoMock package.
+package mocks
+
+import (
+        context "context"
+        reflect "reflect"
+
+        pgx "github.com/jackc/pgx/v5"
+        pgconn "github.com/jackc/pgx/v5/pgconn"
+        gomock "go.uber.org/mock/gomock"
+)
+
+// MockPgxPool is a mock of PgxPool interface.
+type MockPgxPool struct {
+        ctrl     *gomock.Controller
+        recorder *MockPgxPoolMockRecorder
+}
+
+// MockPgxPoolMockRecorder is the mock recorder for MockPgxPool.
+type MockPgxPoolMockRecorder struct {
+        mock *MockPgxPool
+}
+
+// NewMockPgxPool creates a new mock instance.
+func NewMockPgxPool(ctrl *gomock.Controller) *MockPgxPool <span class="cov8" title="1">{
+        mock := &amp;MockPgxPool{ctrl: ctrl}
+        mock.recorder = &amp;MockPgxPoolMockRecorder{mock}
+        return mock
+}</span>
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockPgxPool) EXPECT() *MockPgxPoolMockRecorder <span class="cov8" title="1">{
+        return m.recorder
+}</span>
+
+// BeginTx mocks base method.
+func (m *MockPgxPool) BeginTx(ctx context.Context, txOptions pgx.TxOptions) (pgx.Tx, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "BeginTx", ctx, txOptions)
+        ret0, _ := ret[0].(pgx.Tx)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// BeginTx indicates an expected call of BeginTx.
+func (mr *MockPgxPoolMockRecorder) BeginTx(ctx, txOptions interface{}) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BeginTx", reflect.TypeOf((*MockPgxPool)(nil).BeginTx), ctx, txOptions)
+}</span>
+
+// Exec mocks base method.
+func (m *MockPgxPool) Exec(ctx context.Context, sql string, args ...any) (pgconn.CommandTag, error) <span class="cov8" title="1">{
+        m.ctrl.T.Helper()
+        varargs := []interface{}{ctx, sql}
+        for _, a := range args </span><span class="cov8" title="1">{
+                varargs = append(varargs, a)
+        }</span>
+        <span class="cov8" title="1">ret := m.ctrl.Call(m, "Exec", varargs...)
+        ret0, _ := ret[0].(pgconn.CommandTag)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1</span>
+}
+
+// Exec indicates an expected call of Exec.
+func (mr *MockPgxPoolMockRecorder) Exec(ctx, sql interface{}, args ...interface{}) *gomock.Call <span class="cov8" title="1">{
+        mr.mock.ctrl.T.Helper()
+        varargs := append([]interface{}{ctx, sql}, args...)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Exec", reflect.TypeOf((*MockPgxPool)(nil).Exec), varargs...)
+}</span>
+
+// Query mocks base method.
+func (m *MockPgxPool) Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        varargs := []interface{}{ctx, sql}
+        for _, a := range args </span><span class="cov0" title="0">{
+                varargs = append(varargs, a)
+        }</span>
+        <span class="cov0" title="0">ret := m.ctrl.Call(m, "Query", varargs...)
+        ret0, _ := ret[0].(pgx.Rows)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1</span>
+}
+
+// Query indicates an expected call of Query.
+func (mr *MockPgxPoolMockRecorder) Query(ctx, sql interface{}, args ...interface{}) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        varargs := append([]interface{}{ctx, sql}, args...)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Query", reflect.TypeOf((*MockPgxPool)(nil).Query), varargs...)
+}</span>
+</pre>
+		
+		<pre class="file" id="file11" style="display: none">// Code generated by MockGen. DO NOT EDIT.
+// Source: github.com/jackc/pgx/v5 (interfaces: Tx)
+
+// Package mocks is a generated GoMock package.
+package mocks
+
+import (
+        context "context"
+        reflect "reflect"
+
+        pgx "github.com/jackc/pgx/v5"
+        pgconn "github.com/jackc/pgx/v5/pgconn"
+        gomock "go.uber.org/mock/gomock"
+)
+
+// MockTx is a mock of Tx interface.
+type MockTx struct {
+        ctrl     *gomock.Controller
+        recorder *MockTxMockRecorder
+}
+
+// MockTxMockRecorder is the mock recorder for MockTx.
+type MockTxMockRecorder struct {
+        mock *MockTx
+}
+
+// NewMockTx creates a new mock instance.
+func NewMockTx(ctrl *gomock.Controller) *MockTx <span class="cov0" title="0">{
+        mock := &amp;MockTx{ctrl: ctrl}
+        mock.recorder = &amp;MockTxMockRecorder{mock}
+        return mock
+}</span>
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockTx) EXPECT() *MockTxMockRecorder <span class="cov0" title="0">{
+        return m.recorder
+}</span>
+
+// Begin mocks base method.
+func (m *MockTx) Begin(arg0 context.Context) (pgx.Tx, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "Begin", arg0)
+        ret0, _ := ret[0].(pgx.Tx)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// Begin indicates an expected call of Begin.
+func (mr *MockTxMockRecorder) Begin(arg0 interface{}) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Begin", reflect.TypeOf((*MockTx)(nil).Begin), arg0)
+}</span>
+
+// Commit mocks base method.
+func (m *MockTx) Commit(arg0 context.Context) error <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "Commit", arg0)
+        ret0, _ := ret[0].(error)
+        return ret0
+}</span>
+
+// Commit indicates an expected call of Commit.
+func (mr *MockTxMockRecorder) Commit(arg0 interface{}) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Commit", reflect.TypeOf((*MockTx)(nil).Commit), arg0)
+}</span>
+
+// Conn mocks base method.
+func (m *MockTx) Conn() *pgx.Conn <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "Conn")
+        ret0, _ := ret[0].(*pgx.Conn)
+        return ret0
+}</span>
+
+// Conn indicates an expected call of Conn.
+func (mr *MockTxMockRecorder) Conn() *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Conn", reflect.TypeOf((*MockTx)(nil).Conn))
+}</span>
+
+// CopyFrom mocks base method.
+func (m *MockTx) CopyFrom(arg0 context.Context, arg1 pgx.Identifier, arg2 []string, arg3 pgx.CopyFromSource) (int64, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "CopyFrom", arg0, arg1, arg2, arg3)
+        ret0, _ := ret[0].(int64)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// CopyFrom indicates an expected call of CopyFrom.
+func (mr *MockTxMockRecorder) CopyFrom(arg0, arg1, arg2, arg3 interface{}) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CopyFrom", reflect.TypeOf((*MockTx)(nil).CopyFrom), arg0, arg1, arg2, arg3)
+}</span>
+
+// Exec mocks base method.
+func (m *MockTx) Exec(arg0 context.Context, arg1 string, arg2 ...interface{}) (pgconn.CommandTag, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        varargs := []interface{}{arg0, arg1}
+        for _, a := range arg2 </span><span class="cov0" title="0">{
+                varargs = append(varargs, a)
+        }</span>
+        <span class="cov0" title="0">ret := m.ctrl.Call(m, "Exec", varargs...)
+        ret0, _ := ret[0].(pgconn.CommandTag)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1</span>
+}
+
+// Exec indicates an expected call of Exec.
+func (mr *MockTxMockRecorder) Exec(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        varargs := append([]interface{}{arg0, arg1}, arg2...)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Exec", reflect.TypeOf((*MockTx)(nil).Exec), varargs...)
+}</span>
+
+// LargeObjects mocks base method.
+func (m *MockTx) LargeObjects() pgx.LargeObjects <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "LargeObjects")
+        ret0, _ := ret[0].(pgx.LargeObjects)
+        return ret0
+}</span>
+
+// LargeObjects indicates an expected call of LargeObjects.
+func (mr *MockTxMockRecorder) LargeObjects() *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LargeObjects", reflect.TypeOf((*MockTx)(nil).LargeObjects))
+}</span>
+
+// Prepare mocks base method.
+func (m *MockTx) Prepare(arg0 context.Context, arg1, arg2 string) (*pgconn.StatementDescription, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "Prepare", arg0, arg1, arg2)
+        ret0, _ := ret[0].(*pgconn.StatementDescription)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// Prepare indicates an expected call of Prepare.
+func (mr *MockTxMockRecorder) Prepare(arg0, arg1, arg2 interface{}) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Prepare", reflect.TypeOf((*MockTx)(nil).Prepare), arg0, arg1, arg2)
+}</span>
+
+// Query mocks base method.
+func (m *MockTx) Query(arg0 context.Context, arg1 string, arg2 ...interface{}) (pgx.Rows, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        varargs := []interface{}{arg0, arg1}
+        for _, a := range arg2 </span><span class="cov0" title="0">{
+                varargs = append(varargs, a)
+        }</span>
+        <span class="cov0" title="0">ret := m.ctrl.Call(m, "Query", varargs...)
+        ret0, _ := ret[0].(pgx.Rows)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1</span>
+}
+
+// Query indicates an expected call of Query.
+func (mr *MockTxMockRecorder) Query(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        varargs := append([]interface{}{arg0, arg1}, arg2...)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Query", reflect.TypeOf((*MockTx)(nil).Query), varargs...)
+}</span>
+
+// QueryRow mocks base method.
+func (m *MockTx) QueryRow(arg0 context.Context, arg1 string, arg2 ...interface{}) pgx.Row <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        varargs := []interface{}{arg0, arg1}
+        for _, a := range arg2 </span><span class="cov0" title="0">{
+                varargs = append(varargs, a)
+        }</span>
+        <span class="cov0" title="0">ret := m.ctrl.Call(m, "QueryRow", varargs...)
+        ret0, _ := ret[0].(pgx.Row)
+        return ret0</span>
+}
+
+// QueryRow indicates an expected call of QueryRow.
+func (mr *MockTxMockRecorder) QueryRow(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        varargs := append([]interface{}{arg0, arg1}, arg2...)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "QueryRow", reflect.TypeOf((*MockTx)(nil).QueryRow), varargs...)
+}</span>
+
+// Rollback mocks base method.
+func (m *MockTx) Rollback(arg0 context.Context) error <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "Rollback", arg0)
+        ret0, _ := ret[0].(error)
+        return ret0
+}</span>
+
+// Rollback indicates an expected call of Rollback.
+func (mr *MockTxMockRecorder) Rollback(arg0 interface{}) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Rollback", reflect.TypeOf((*MockTx)(nil).Rollback), arg0)
+}</span>
+
+// SendBatch mocks base method.
+func (m *MockTx) SendBatch(arg0 context.Context, arg1 *pgx.Batch) pgx.BatchResults <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "SendBatch", arg0, arg1)
+        ret0, _ := ret[0].(pgx.BatchResults)
+        return ret0
+}</span>
+
+// SendBatch indicates an expected call of SendBatch.
+func (mr *MockTxMockRecorder) SendBatch(arg0, arg1 interface{}) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendBatch", reflect.TypeOf((*MockTx)(nil).SendBatch), arg0, arg1)
+}</span>
+</pre>
+		
+		<pre class="file" id="file12" style="display: none">package segmentrepo
+
+import "github.com/s-gurman/user-segmentation/pkg/postgres"
+
+type Repository struct {
+        Experiment ExperimentRepo
+        Segment    SegmentRepo
+}
+
+func NewPostgreSQL(pg postgres.Postgres) Repository <span class="cov0" title="0">{
+        return Repository{
+                Experiment: NewExperimentRepository(pg),
+                Segment:    NewSegmentRepository(pg),
+        }
+}</span>
+</pre>
+		
+		<pre class="file" id="file13" style="display: none">package segmentrepo
+
+import (
+        "context"
+        "errors"
+        "fmt"
+
+        "github.com/s-gurman/user-segmentation/internal/domain"
+        "github.com/s-gurman/user-segmentation/internal/e"
+        "github.com/s-gurman/user-segmentation/pkg/postgres"
+
+        "github.com/jackc/pgerrcode"
+        "github.com/jackc/pgx/v5"
+        "github.com/jackc/pgx/v5/pgconn"
+)
+
+type SegmentRepo struct {
+        db PgxPool
+}
+
+func NewSegmentRepository(pg postgres.Postgres) SegmentRepo <span class="cov0" title="0">{
+        return SegmentRepo{db: pg.GetPool()}
+}</span>
+
+func insertSegment(ctx context.Context, tx pgx.Tx, slug domain.Slug) (int, error) <span class="cov0" title="0">{
+        query := `INSERT INTO segments (slug) VALUES ($1) RETURNING id`
+
+        var id int
+        if err := tx.QueryRow(ctx, query, slug).Scan(&amp;id); err != nil </span><span class="cov0" title="0">{
+                var pgErr *pgconn.PgError
+                if errors.As(err, &amp;pgErr) &amp;&amp; pgErr.Code == pgerrcode.UniqueViolation </span><span class="cov0" title="0">{
+                        msg := "attempt to create already created segment"
+                        return 0, e.NewBadRequest(msg, "segmentrepo" /*from*/)
+                }</span>
+                <span class="cov0" title="0">return 0, fmt.Errorf("segmentrepo - tx insert segment err: %w", err)</span>
+        }
+
+        <span class="cov0" title="0">return id, nil</span>
+}
+
+func initSegmentByRandomUsers(
+        ctx context.Context,
+        tx pgx.Tx,
+        segID int,
+        autoaddPercent float32,
+) (int64, error) <span class="cov0" title="0">{
+
+        query := `
+INSERT INTO experiments (user_id, segment_id)
+SELECT id, $1 FROM users TABLESAMPLE BERNOULLI ($2)`
+
+        tag, err := tx.Exec(ctx, query, segID, autoaddPercent)
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, fmt.Errorf("segmentrepo - tx insert segment users err: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">return tag.RowsAffected(), nil</span>
+}
+
+func (repo SegmentRepo) CreateSegment(
+        ctx context.Context,
+        slug domain.Slug,
+        autoaddPercent float32,
+) (int, int64, error) <span class="cov0" title="0">{
+
+        tx, err := repo.db.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead})
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, 0, fmt.Errorf("segmentrepo - tx begin err: %w", err)
+        }</span>
+        <span class="cov0" title="0">defer tx.Rollback(ctx) // nolint:errcheck
+
+        segID, err := insertSegment(ctx, tx, slug)
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, 0, err
+        }</span>
+
+        <span class="cov0" title="0">var autoaddUserCount int64
+        if autoaddPercent &gt; 0 </span><span class="cov0" title="0">{
+                autoaddUserCount, err = initSegmentByRandomUsers(ctx, tx, segID, autoaddPercent)
+                if err != nil </span><span class="cov0" title="0">{
+                        return 0, 0, err
+                }</span>
+        }
+
+        <span class="cov0" title="0">if err = tx.Commit(ctx); err != nil </span><span class="cov0" title="0">{
+                return 0, 0, fmt.Errorf("segmentrepo - tx commit err: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">return segID, autoaddUserCount, nil</span>
+}
+
+func (repo SegmentRepo) DeleteSegment(
+        ctx context.Context,
+        slug domain.Slug,
+) error <span class="cov8" title="1">{
+
+        query := `DELETE FROM segments WHERE slug = $1`
+
+        tag, err := repo.db.Exec(ctx, query, slug)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("segmentrepo - segment delete exec err: %w", err)
+        }</span>
+        <span class="cov8" title="1">if tag.RowsAffected() != 1 </span><span class="cov0" title="0">{
+                msg := "attempt to delete unknown segment"
+                return e.NewNotFound(msg, "segmentrepo" /*from*/)
+        }</span>
+
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file14" style="display: none">package segmentsvc
+
+import (
+        "context"
+        "fmt"
+        "time"
+
+        "github.com/s-gurman/user-segmentation/internal/domain"
+        "github.com/s-gurman/user-segmentation/internal/e"
+        "github.com/s-gurman/user-segmentation/internal/t"
+
+        "golang.org/x/sync/errgroup"
+)
+
+const _defaultTimeTruncate = time.Second
+
+func namesToSlugs(names []string, slugs []domain.Slug, list string) error <span class="cov0" title="0">{
+        // no need to use sync Map (it will be created and used by only one goroutine)
+        namesMap := make(map[string]struct{})
+
+        for i, name := range names </span><span class="cov0" title="0">{
+                if _, found := namesMap[name]; found </span><span class="cov0" title="0">{
+                        msg := fmt.Sprintf("%s list contains non-unique segments", list)
+                        return e.NewBadRequest(msg, "segmentsvc")
+                }</span>
+                <span class="cov0" title="0">namesMap[name] = struct{}{}
+
+                slug, err := domain.NewSlug(name)
+                if err != nil </span><span class="cov0" title="0">{
+                        msg := fmt.Sprintf("%s list contains invalid segment name", list)
+                        return e.NewBadRequest(msg, "segmentsvc")
+                }</span>
+                <span class="cov0" title="0">slugs[i] = slug</span>
+        }
+
+        <span class="cov0" title="0">return nil</span>
+}
+
+func getSlugsToUpdate(toDel, toAdd []string) ([]domain.Slug, []domain.Slug, error) <span class="cov0" title="0">{
+        if len(toDel) == 0 &amp;&amp; len(toAdd) == 0 </span><span class="cov0" title="0">{
+                msg := "empty experiment update lists, must add or delete at least one segment"
+                return nil, nil, e.NewBadRequest(msg, "segmentsvc" /*from*/)
+        }</span>
+        <span class="cov0" title="0">slugsToDel := make([]domain.Slug, len(toDel))
+        slugsToAdd := make([]domain.Slug, len(toAdd))
+
+        g := new(errgroup.Group)
+        g.Go(func() error </span><span class="cov0" title="0">{
+                return namesToSlugs(toDel, slugsToDel, "delete")
+        }</span>)
+        <span class="cov0" title="0">g.Go(func() error </span><span class="cov0" title="0">{
+                return namesToSlugs(toAdd, slugsToAdd, "add")
+        }</span>)
+        <span class="cov0" title="0">if err := g.Wait(); err != nil </span><span class="cov0" title="0">{
+                return nil, nil, err
+        }</span>
+
+        <span class="cov0" title="0">return slugsToDel, slugsToAdd, nil</span>
+}
+
+func (svc SegmentationSvc) UpdateExperiments(
+        ctx context.Context,
+        userID int,
+        toDel, toAdd []string,
+        delTime *t.CustomTime,
+) error <span class="cov0" title="0">{
+
+        if delTime != nil &amp;&amp; !delTime.After(time.Now().Truncate(_defaultTimeTruncate)) </span><span class="cov0" title="0">{
+                msg := "segment deletion time should be in the future"
+                return e.NewBadRequest(msg, "segmentsvc" /*from*/)
+        }</span>
+
+        <span class="cov0" title="0">slugsToDel, slugsToAdd, err := getSlugsToUpdate(toDel, toAdd)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov0" title="0">if err = svc.exprepo.UpdateUserSegments(ctx, userID, slugsToDel, slugsToAdd, delTime); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("segmentsvc - update user segments: %w", err)
+        }</span>
+        <span class="cov0" title="0">return nil</span>
+}
+
+func (svc SegmentationSvc) GetUserExperiments(
+        ctx context.Context,
+        userID int,
+) ([]string, error) <span class="cov0" title="0">{
+
+        slugs, err := svc.exprepo.GetUserSegments(ctx, userID)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("segmentsvc - get user segments: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">return slugs, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file15" style="display: none">// Code generated by MockGen. DO NOT EDIT.
+// Source: ./service.go
+
+// Package mocks is a generated GoMock package.
+package mocks
+
+import (
+        context "context"
+        reflect "reflect"
+
+        domain "github.com/s-gurman/user-segmentation/internal/domain"
+        t "github.com/s-gurman/user-segmentation/internal/t"
+        gomock "go.uber.org/mock/gomock"
+)
+
+// MockExperimentStorage is a mock of ExperimentStorage interface.
+type MockExperimentStorage struct {
+        ctrl     *gomock.Controller
+        recorder *MockExperimentStorageMockRecorder
+}
+
+// MockExperimentStorageMockRecorder is the mock recorder for MockExperimentStorage.
+type MockExperimentStorageMockRecorder struct {
+        mock *MockExperimentStorage
+}
+
+// NewMockExperimentStorage creates a new mock instance.
+func NewMockExperimentStorage(ctrl *gomock.Controller) *MockExperimentStorage <span class="cov0" title="0">{
+        mock := &amp;MockExperimentStorage{ctrl: ctrl}
+        mock.recorder = &amp;MockExperimentStorageMockRecorder{mock}
+        return mock
+}</span>
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockExperimentStorage) EXPECT() *MockExperimentStorageMockRecorder <span class="cov0" title="0">{
+        return m.recorder
+}</span>
+
+// GetUserSegments mocks base method.
+func (m *MockExperimentStorage) GetUserSegments(arg0 context.Context, userID int) ([]string, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "GetUserSegments", arg0, userID)
+        ret0, _ := ret[0].([]string)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// GetUserSegments indicates an expected call of GetUserSegments.
+func (mr *MockExperimentStorageMockRecorder) GetUserSegments(arg0, userID interface{}) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserSegments", reflect.TypeOf((*MockExperimentStorage)(nil).GetUserSegments), arg0, userID)
+}</span>
+
+// UpdateUserSegments mocks base method.
+func (m *MockExperimentStorage) UpdateUserSegments(arg0 context.Context, userID int, toDel, toAdd []domain.Slug, delTime *t.CustomTime) error <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "UpdateUserSegments", arg0, userID, toDel, toAdd, delTime)
+        ret0, _ := ret[0].(error)
+        return ret0
+}</span>
+
+// UpdateUserSegments indicates an expected call of UpdateUserSegments.
+func (mr *MockExperimentStorageMockRecorder) UpdateUserSegments(arg0, userID, toDel, toAdd, delTime interface{}) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserSegments", reflect.TypeOf((*MockExperimentStorage)(nil).UpdateUserSegments), arg0, userID, toDel, toAdd, delTime)
+}</span>
+
+// MockSegmentStorage is a mock of SegmentStorage interface.
+type MockSegmentStorage struct {
+        ctrl     *gomock.Controller
+        recorder *MockSegmentStorageMockRecorder
+}
+
+// MockSegmentStorageMockRecorder is the mock recorder for MockSegmentStorage.
+type MockSegmentStorageMockRecorder struct {
+        mock *MockSegmentStorage
+}
+
+// NewMockSegmentStorage creates a new mock instance.
+func NewMockSegmentStorage(ctrl *gomock.Controller) *MockSegmentStorage <span class="cov8" title="1">{
+        mock := &amp;MockSegmentStorage{ctrl: ctrl}
+        mock.recorder = &amp;MockSegmentStorageMockRecorder{mock}
+        return mock
+}</span>
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockSegmentStorage) EXPECT() *MockSegmentStorageMockRecorder <span class="cov8" title="1">{
+        return m.recorder
+}</span>
+
+// CreateSegment mocks base method.
+func (m *MockSegmentStorage) CreateSegment(arg0 context.Context, slug domain.Slug, autoaddPercent float32) (int, int64, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "CreateSegment", arg0, slug, autoaddPercent)
+        ret0, _ := ret[0].(int)
+        ret1, _ := ret[1].(int64)
+        ret2, _ := ret[2].(error)
+        return ret0, ret1, ret2
+}</span>
+
+// CreateSegment indicates an expected call of CreateSegment.
+func (mr *MockSegmentStorageMockRecorder) CreateSegment(arg0, slug, autoaddPercent interface{}) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSegment", reflect.TypeOf((*MockSegmentStorage)(nil).CreateSegment), arg0, slug, autoaddPercent)
+}</span>
+
+// DeleteSegment mocks base method.
+func (m *MockSegmentStorage) DeleteSegment(arg0 context.Context, slug domain.Slug) error <span class="cov8" title="1">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "DeleteSegment", arg0, slug)
+        ret0, _ := ret[0].(error)
+        return ret0
+}</span>
+
+// DeleteSegment indicates an expected call of DeleteSegment.
+func (mr *MockSegmentStorageMockRecorder) DeleteSegment(arg0, slug interface{}) *gomock.Call <span class="cov8" title="1">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSegment", reflect.TypeOf((*MockSegmentStorage)(nil).DeleteSegment), arg0, slug)
+}</span>
+</pre>
+		
+		<pre class="file" id="file16" style="display: none">package segmentsvc
+
+import (
+        "context"
+        "fmt"
+
+        "github.com/s-gurman/user-segmentation/internal/domain"
+        "github.com/s-gurman/user-segmentation/internal/e"
+)
+
+func (svc SegmentationSvc) CreateSegment(
+        ctx context.Context,
+        name string,
+        autoaddPercent float32,
+) (int, int64, error) <span class="cov0" title="0">{
+
+        slug, err := domain.NewSlug(name)
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, 0, e.NewBadRequest(err.Error(), "segmentsvc" /*from*/)
+        }</span>
+        <span class="cov0" title="0">if autoaddPercent &lt; 0 || autoaddPercent &gt; 100 </span><span class="cov0" title="0">{
+                msg := "autoadd_percent option should be in range [0, 100]"
+                return 0, 0, e.NewBadRequest(msg, "segmentsvc")
+        }</span>
+
+        <span class="cov0" title="0">id, autoaddCount, err := svc.segrepo.CreateSegment(ctx, slug, autoaddPercent)
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, 0, fmt.Errorf("segmentsvc - create segment: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">return id, autoaddCount, nil</span>
+}
+
+func (svc SegmentationSvc) DeleteSegment(ctx context.Context, name string) error <span class="cov8" title="1">{
+        slug, err := domain.NewSlug(name)
+        if err != nil </span><span class="cov0" title="0">{
+                return e.NewBadRequest(err.Error(), "segmentsvc" /*from*/)
+        }</span>
+
+        <span class="cov8" title="1">if err := svc.segrepo.DeleteSegment(ctx, slug); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("segmentsvc - delete segment: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file17" style="display: none">package segmentsvc
+
+import (
+        "context"
+
+        "github.com/s-gurman/user-segmentation/internal/domain"
+        "github.com/s-gurman/user-segmentation/internal/t"
+)
+
+// mockgen -source ./service.go -destination ./mocks/storage.go -package mocks
+
+type (
+        ExperimentStorage interface {
+                UpdateUserSegments(_ context.Context, userID int, toDel, toAdd []domain.Slug, delTime *t.CustomTime) error
+                GetUserSegments(_ context.Context, userID int) ([]string, error)
+        }
+        SegmentStorage interface {
+                CreateSegment(_ context.Context, slug domain.Slug, autoaddPercent float32) (int, int64, error)
+                DeleteSegment(_ context.Context, slug domain.Slug) error
+        }
+)
+
+type SegmentationSvc struct {
+        segrepo SegmentStorage
+        exprepo ExperimentStorage
+}
+
+func New(segment SegmentStorage, experiment ExperimentStorage) SegmentationSvc <span class="cov0" title="0">{
+        return SegmentationSvc{
+                segrepo: segment,
+                exprepo: experiment,
+        }
+}</span>
+</pre>
+		
+		<pre class="file" id="file18" style="display: none">package t
+
+import (
+        "fmt"
+        "strings"
+        "time"
+)
+
+const Layout = "2006-01-02 15:04:05"
+
+type CustomTime struct {
+        time.Time
+}
+
+func (t *CustomTime) UnmarshalJSON(data []byte) (err error) <span class="cov0" title="0">{
+        s := strings.Trim(string(data), `"`)
+        t.Time, err = time.ParseInLocation(Layout, s, time.Local)
+        return err
+}</span>
+
+func (t CustomTime) MarshalJSON() ([]byte, error) <span class="cov0" title="0">{
+        if t.IsZero() </span><span class="cov0" title="0">{
+                return nil, nil
+        }</span>
+        <span class="cov0" title="0">return []byte(fmt.Sprintf(`"%s"`, t.Format(Layout))), nil</span>
+}
+
+func (t CustomTime) String() string <span class="cov0" title="0">{
+        return t.Format(Layout)
+}</span>
+</pre>
+		
+		<pre class="file" id="file19" style="display: none">package middleware
+
+import (
+        "fmt"
+        "net/http"
+        "time"
+
+        "github.com/s-gurman/user-segmentation/pkg/logger"
+)
+
+func PanicRecovery(next http.Handler, l logger.Logger) http.Handler <span class="cov0" title="0">{
+        return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
+                fmt.Println()
+                l.Info("panic recovery middleware")
+
+                defer func() </span><span class="cov0" title="0">{
+                        if err := recover(); err != nil </span><span class="cov0" title="0">{
+                                l.Errorf("panic recovered with err: %s", err)
+                                http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+                        }</span>
+                }()
+
+                <span class="cov0" title="0">next.ServeHTTP(w, r)</span>
+        })
+}
+
+func AccessLog(next http.Handler, l logger.Logger) http.Handler <span class="cov0" title="0">{
+        return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
+                l.Info("access log middleware")
+
+                start := time.Now()
+                next.ServeHTTP(w, r)
+
+                l.Infow("served",
+                        "method", r.Method,
+                        "uri", r.RequestURI,
+                        "from", r.RemoteAddr,
+                        "elapsed", fmt.Sprint(time.Since(start)),
+                )
+        }</span>)
+}
+</pre>
+		
+		<pre class="file" id="file20" style="display: none">package logger
+
+import (
+        "os"
+
+        "go.uber.org/zap"
+        "go.uber.org/zap/zapcore"
+)
+
+const dateTimeLayout = "2006-01-02 15:04:05"
+
+type Logger interface {
+        Info(...interface{})
+        Error(...interface{})
+        Panic(...interface{})
+        Infof(string, ...interface{})
+        Errorf(string, ...interface{})
+        Panicf(string, ...interface{})
+        Infow(string, ...interface{})
+        Errorw(string, ...interface{})
+        Panicw(string, ...interface{})
+        Sync() error
+}
+
+func New() Logger <span class="cov0" title="0">{
+        encoderCfg := zap.NewProductionEncoderConfig()
+        encoderCfg.EncodeTime = zapcore.TimeEncoderOfLayout(dateTimeLayout)
+        zapLogger := zap.New(
+                zapcore.NewCore(
+                        zapcore.NewJSONEncoder(encoderCfg),
+                        zapcore.Lock(os.Stdout),
+                        zap.NewAtomicLevel(),
+                ),
+        )
+        return zapLogger.Sugar()
+}</span>
+</pre>
+		
+		<pre class="file" id="file21" style="display: none">package postgres
+
+import (
+        "context"
+        "fmt"
+
+        "github.com/s-gurman/user-segmentation/config"
+
+        "github.com/jackc/pgx/v5/pgxpool"
+        _ "github.com/jackc/pgx/v5/stdlib"
+)
+
+type Postgres interface {
+        GetPool() *pgxpool.Pool
+        Close()
+}
+
+type postgres struct {
+        db *pgxpool.Pool
+}
+
+func New(ctx context.Context, cfg config.PGConfig) (Postgres, error) <span class="cov0" title="0">{
+        pgURL := fmt.Sprintf(
+                "postgres://%s:%s@%s/%s?sslmode=%s",
+                cfg.Username, cfg.Password, cfg.Address, cfg.DBName, cfg.SSLMode,
+        )
+        db, err := pgxpool.New(ctx, pgURL)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("pg - open err: %w", err)
+        }</span>
+        <span class="cov0" title="0">if err = db.Ping(ctx); err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("pg - ping err: %w", err)
+        }</span>
+        <span class="cov0" title="0">return postgres{db: db}, nil</span>
+}
+
+func (pg postgres) GetPool() *pgxpool.Pool <span class="cov0" title="0">{
+        return pg.db
+}</span>
+
+func (pg postgres) Close() <span class="cov0" title="0">{
+        pg.db.Close()
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

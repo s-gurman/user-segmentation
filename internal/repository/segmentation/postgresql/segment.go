@@ -12,10 +12,17 @@ import (
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func (tx pgxTx) insertSegment(ctx context.Context, slug domain.Slug) (int, error) {
+type SegmentRepo struct {
+	db PgxPool
+}
+
+func NewSegmentRepository(pg postgres.Postgres) SegmentRepo {
+	return SegmentRepo{db: pg.GetPool()}
+}
+
+func insertSegment(ctx context.Context, tx pgx.Tx, slug domain.Slug) (int, error) {
 	query := `INSERT INTO segments (slug) VALUES ($1) RETURNING id`
 
 	var id int
@@ -31,8 +38,9 @@ func (tx pgxTx) insertSegment(ctx context.Context, slug domain.Slug) (int, error
 	return id, nil
 }
 
-func (tx pgxTx) initSegmentByRandomUsers(
+func initSegmentByRandomUsers(
 	ctx context.Context,
+	tx pgx.Tx,
 	segID int,
 	autoaddPercent float32,
 ) (int64, error) {
@@ -49,48 +57,36 @@ SELECT id, $1 FROM users TABLESAMPLE BERNOULLI ($2)`
 	return tag.RowsAffected(), nil
 }
 
-type SegmentRepo struct {
-	db *pgxpool.Pool
-}
-
-func NewSegmentRepository(pg postgres.Postgres) SegmentRepo {
-	return SegmentRepo{db: pg.GetPool()}
-}
-
 func (repo SegmentRepo) CreateSegment(
 	ctx context.Context,
 	slug domain.Slug,
 	autoaddPercent float32,
 ) (int, int64, error) {
 
-	txOpts := pgx.TxOptions{IsoLevel: pgx.RepeatableRead}
-	tx, err := newPgxTx(ctx, repo.db, txOpts)
+	tx, err := repo.db.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead})
 	if err != nil {
-		return 0, 0, err
+		return 0, 0, fmt.Errorf("segmentrepo - tx begin err: %w", err)
 	}
 	defer tx.Rollback(ctx) // nolint:errcheck
 
-	segID, err := tx.insertSegment(ctx, slug)
+	segID, err := insertSegment(ctx, tx, slug)
 	if err != nil {
 		return 0, 0, err
-	}
-	if autoaddPercent == 0 {
-		if err = tx.Commit(ctx); err != nil {
-			return 0, 0, fmt.Errorf("segmentrepo - tx commit err: %w", err)
-		}
-		return segID, 0, nil
 	}
 
-	insertedCount, err := tx.initSegmentByRandomUsers(ctx, segID, autoaddPercent)
-	if err != nil {
-		return 0, 0, err
+	var autoaddUserCount int64
+	if autoaddPercent > 0 {
+		autoaddUserCount, err = initSegmentByRandomUsers(ctx, tx, segID, autoaddPercent)
+		if err != nil {
+			return 0, 0, err
+		}
 	}
 
 	if err = tx.Commit(ctx); err != nil {
 		return 0, 0, fmt.Errorf("segmentrepo - tx commit err: %w", err)
 	}
 
-	return segID, insertedCount, nil
+	return segID, autoaddUserCount, nil
 }
 
 func (repo SegmentRepo) DeleteSegment(

@@ -7,7 +7,6 @@ import (
 	"github.com/s-gurman/user-segmentation/config"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 type Postgres interface {

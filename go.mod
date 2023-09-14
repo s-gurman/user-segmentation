@@ -8,8 +8,10 @@ require (
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/jackc/pgerrcode v0.0.0-20220416144525-469b46aa5efa
 	github.com/jackc/pgx/v5 v5.4.3
+	github.com/pashagolub/pgxmock/v2 v2.12.0
 	github.com/swaggo/http-swagger/v2 v2.0.2
 	github.com/swaggo/swag v1.16.2
+	go.uber.org/mock v0.2.0
 	go.uber.org/zap v1.25.0
 	golang.org/x/sync v0.3.0
 )

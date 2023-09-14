@@ -7,6 +7,8 @@ import (
 	"github.com/s-gurman/user-segmentation/internal/t"
 )
 
+// mockgen -source ./service.go -destination ./mocks/storage.go -package mocks
+
 type (
 	ExperimentStorage interface {
 		UpdateUserSegments(_ context.Context, userID int, toDel, toAdd []domain.Slug, delTime *t.CustomTime) error
