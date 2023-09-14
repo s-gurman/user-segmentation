@@ -67,7 +67,7 @@ psql postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_ADDR/$POSTGRES_DB?ss
 
 
 
-echo -e '\n============================== FAILED ==============================\n'
+echo -e '============================== FAILED ==============================\n'
 
 for body in '{' '{"foo": "bar"}' '{"name": 1234}'; do
     echo "request: POST /api/segment $body"

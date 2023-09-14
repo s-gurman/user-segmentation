@@ -76,7 +76,6 @@ update_user_experiments 1234 '["a8","a9","a10"]' '["a1","a2","a3","a4","a5"]'
 print_experiments 1234; sleep 2
 
 get_user_experiments 1234
-curl -s -X 'GET' 'http://localhost:8081/api/experiments/user/1234'; echo
 
 
 
@@ -88,7 +87,7 @@ update_user_experiments 1234 '[]' '["non-exist segment"]'
 update_user_experiments 1234 '[]' '["a5"]'
 update_user_experiments 1234 '["a5","a6"]' '[]'
 update_user_experiments 1234 '["a1","a2","a3"]' '[]' "bad time layout"
-update_user_experiments 1234 '["a1","a2","a3"]' '[]' "$(date -d '-1 day' '+%F %T')"
+update_user_experiments 1234 '["a1","a2","a3"]' '[]' "$(date -v -1d '+%F %T')"
 
 
 
