@@ -8,19 +8,15 @@ on:
     branches:
       - main
 
-env:
-  GO_VERSION: '1.20'
-  RUN_OS: ubuntu-latest
-
 jobs:
   build:
     name: Build
-    runs-on: $RUN_OS
+    runs-on: ${{ vars.RUN_OS }}
     steps:
       - uses: actions/checkout@main
       - uses: actions/setup-go@v4
         with:
-          go-version: $GO_VERSION
+          go-version: ${{ vars.GO_VERSION }}
 
       - name: Set up Go
         run: go version
@@ -31,12 +27,12 @@ jobs:
   test:
     name: Test
     needs: build
-    runs-on: $RUN_OS
+    runs-on: ${{ vars.RUN_OS }}
     steps:
       - uses: actions/checkout@main
       - uses: actions/setup-go@v4
         with:
-          go-version: $GO_VERSION
+          go-version: ${{ vars.GO_VERSION }}
 
       - name: Running unit tests
         run: make test
@@ -44,12 +40,12 @@ jobs:
   lint:
     name: Lint
     needs: build
-    runs-on: $RUN_OS
+    runs-on: ${{ vars.RUN_OS }}
     steps:
       - uses: actions/checkout@main
       - uses: actions/setup-go@v4
         with:
-          go-version: $GO_VERSION
+          go-version: ${{ vars.GO_VERSION }}
       - uses: golangci/golangci-lint-action@v3
         with:
           version: v1.52
