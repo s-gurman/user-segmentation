@@ -15,6 +15,22 @@ services:
       - ./config/.env
     ports:
       - 5436:5432
+  
+  pgadmin:
+    image: dpage/pgadmin4
+
+    container_name: pg-admin
+    restart: unless-stopped
+    init: true
+
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    env_file:
+      - ./config/.env
+    ports:
+      - 5050:5050
+    depends_on:
+      - postgres
 
   user-segmentation:
     build:
@@ -25,12 +41,14 @@ services:
     restart: unless-stopped
     init: true
 
-    depends_on:
-      - postgres
     env_file:
       - ./config/.env
     ports:
       - 8081:8081
+    depends_on:
+      - postgres
+      - pgadmin
 
 volumes:
   db-data:
+  pgadmin-data:

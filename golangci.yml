@@ -27,6 +27,41 @@ linters-settings:
     max-func-lines: 50
   predeclared:
     q: true
+  revive:
+    ignore-generated-header: true
+    severity: error
+    rules:
+      - name: argument-limit
+        disabled: false
+        arguments: [5]
+      - name: atomic
+        disabled: false
+      - name: blank-imports
+        disabled: false
+      - name: confusing-naming
+        severity: warning
+        disabled: false
+      - name: function-result-limit
+        severity: warning
+        disabled: false
+        arguments: [3]
+      - name: import-shadowing
+        severity: warning
+        disabled: false
+      - name: nested-structs
+        severity: warning
+        disabled: false
+      - name: range-val-in-closure
+        disabled: false
+      - name: range-val-address
+        disabled: false
+      - name: time-equal
+        disabled: false
+      - name: unused-parameter
+        severity: warning
+        disabled: false
+      - name: waitgroup-by-value
+        disabled: false
   tagliatelle:
     case:
       use-field-name: false
@@ -54,6 +89,7 @@ linters:
     - nakedret
     - prealloc
     - predeclared
+    - revive
     - staticcheck
     - sqlclosecheck
     - stylecheck

@@ -11,3 +11,4 @@ images/
 Makefile
 README.md
 task/
+test_coverage/
