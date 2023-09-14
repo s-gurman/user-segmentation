@@ -886,7 +886,7 @@ import (
         "context"
         "net/http"
 
-        _ "github.com/s-gurman/user-segmentation/docs"
+        _ "github.com/s-gurman/user-segmentation/docs" // for handling swagger api
         "github.com/s-gurman/user-segmentation/internal/t"
         "github.com/s-gurman/user-segmentation/pkg/http/middleware"
         "github.com/s-gurman/user-segmentation/pkg/logger"
@@ -2094,7 +2094,6 @@ import (
         "github.com/s-gurman/user-segmentation/config"
 
         "github.com/jackc/pgx/v5/pgxpool"
-        _ "github.com/jackc/pgx/v5/stdlib"
 )
 
 type Postgres interface {

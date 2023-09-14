@@ -3,7 +3,7 @@ export
 
 .DEFAULT_GOAL := compose_run
 
-.PHONY: compose_run compose_down psql build run test lint swag
+.PHONY: compose_run compose_down psql build run test test_cover lint swag
 
 compose_run:
 	docker compose run -it --rm --build --remove-orphans --service-ports --name $(APP) $(APP)
@@ -17,13 +17,15 @@ psql:
 	$(POSTGRES_ADDR)/$(POSTGRES_DB)?sslmode=$(POSTGRES_SSLMODE)
 
 build:
-	go mod vendor
 	go build -mod=vendor -o ./bin/$(APP) ./cmd/$(APP)
 
 run: build
 	./bin/$(APP)
 
 test:
+	go test -v -race ./...
+
+test_cover:
 	go test -v -coverpkg=./... -coverprofile=./test_coverage/cover.out ./...
 	go tool cover -html=./test_coverage/cover.out -o ./test_coverage/cover.html
 
