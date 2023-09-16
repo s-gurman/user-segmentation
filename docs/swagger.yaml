@@ -65,8 +65,6 @@ info:
 paths:
   /experiments/user/{user_id}:
     get:
-      consumes:
-      - application/json
       description: Gets the user's active segments.
       parameters:
       - description: User ID
@@ -88,10 +86,6 @@ paths:
                     type: string
                   type: array
               type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/httpapi.failedResponse'
         "500":
           description: Internal Server Error
           schema:

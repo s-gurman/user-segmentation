@@ -18,9 +18,6 @@ const docTemplate = `{
         "/experiments/user/{user_id}": {
             "get": {
                 "description": "Gets the user's active segments.",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -57,12 +54,6 @@ const docTemplate = `{
                                     }
                                 }
                             ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httpapi.failedResponse"
                         }
                     },
                     "500": {

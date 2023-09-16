@@ -93,11 +93,10 @@ func (h experimentHandler) updateExperiments(w http.ResponseWriter, r *http.Requ
 // @Summary        Gets user experiments
 // @Description    Gets the user's active segments.
 // @Router         /experiments/user/{user_id} [get]
-// @Accept         json
 // @Produce        json
 // @Param          user_id path     int true "User ID"
 // @Success        200     {object} successResponse{result=[]string}
-// @Failure        400,500 {object} failedResponse
+// @Failure        500     {object} failedResponse
 func (h experimentHandler) getExperiments(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userID, err := strconv.Atoi(vars["user_id"])
