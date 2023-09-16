@@ -84,8 +84,10 @@ echo -e '\n============================== FAILED ==============================\
 update_user_experiments 1234 '[]' '[]'
 update_user_experiments 1234 '["non-exist segment"]' '[]'
 update_user_experiments 1234 '[]' '["non-exist segment"]'
-update_user_experiments 1234 '[]' '["a5"]'
+update_user_experiments 1234 '["a5","a5"]' '[]'
+update_user_experiments 1234 '[]' '["a6","a6"]'
 update_user_experiments 1234 '["a5","a6"]' '[]'
+update_user_experiments 1234 '[]' '["a5","a6"]'
 update_user_experiments 1234 '["a1","a2","a3"]' '[]' "bad time layout"
 update_user_experiments 1234 '["a1","a2","a3"]' '[]' "$(date -v -1d '+%F %T')"
 
