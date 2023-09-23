@@ -1,3 +1,12 @@
+![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/s-gurman/user-segmentation/ci.yml)
+![GitHub go.mod Go version (subdirectory of monorepo)](https://img.shields.io/github/go-mod/go-version/s-gurman/user-segmentation?color=%23)
+![Go Report](https://goreportcard.com/badge/github.com/s-gurman/user-segmentation)
+![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/quality/g/s-gurman/user-segmentation/main)
+![Codacy coverage](https://img.shields.io/codacy/coverage/1719a3a3988f4a5a91c6aa79328789cf)
+![GitHub last commit](https://img.shields.io/github/last-commit/s-gurman/user-segmentation)
+
+<img align="right" width="40%" src="./images/gopher.jpg">
+
 # Сервис динамического сегментирования пользователей
 
 ## Описание задачи
