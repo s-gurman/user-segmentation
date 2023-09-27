@@ -191,7 +191,7 @@ curl -X 'DELETE' 'http://localhost:8081/api/segment' -d \
 }
 ```
 
-### ```POST /experiments/user/{user_id}``` — метод добавления пользователя в сегмент
+### ```POST /api/experiments/user/{user_id}``` — метод добавления пользователя в сегмент
 
 Добавить пользователя в одни сегменты и/или удалить из других:
 ```
@@ -284,7 +284,7 @@ curl -X 'POST' 'http://localhost:8081/api/experiments/user/1234' -d \
 }
 ```
 
-### ```GET /experiments/user/{user_id}``` — метод получения активных сегментов пользователя
+### ```GET /api/experiments/user/{user_id}``` — метод получения активных сегментов пользователя
 
 Получить активные сегменты пользователя:
 ```
